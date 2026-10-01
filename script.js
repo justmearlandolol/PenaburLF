@@ -152,7 +152,7 @@ function initialize() {
   }
   if (!window.supabase || typeof window.supabase.createClient !== "function") {
     elements.setupNotice.hidden = false;
-    elements.setupNotice.innerHTML = "<strong>Supabase belum termuat</strong><span>Periksa koneksi internet dan pemuatan Supabase JS SDK di <code>index.html</code>.</span>";
+    elements.setupNotice.innerHTML = "<strong>Some error occurred</strong><span>Please try again later.</span>";
     return;
   }
 
@@ -590,9 +590,7 @@ function renderFoundItemsPage() {
     <section aria-labelledby="found-page-title">
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Layanan Lost &amp; Found</p>
-          <h1 id="found-page-title">Barang Ditemukan</h1>
-          <p>Daftar barang yang sudah diverifikasi petugas. Informasi pribadi pelapor tidak ditampilkan.</p>
+
         </div>
       </div>
       <div class="filter-bar" aria-label="Pencarian dan filter barang">
