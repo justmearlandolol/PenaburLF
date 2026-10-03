@@ -1,8 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /Admin.html
-Disallow: /admin.js
-Disallow: /admin.css
-Disallow: /supabase_admin_panel.sql
+Disallow: /Admin.js
+Disallow: /Admin.css
 
 Sitemap: https://penaburlf.vercel.app/sitemap.xml
