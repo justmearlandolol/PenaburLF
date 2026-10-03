@@ -330,3 +330,33 @@ a { color: var(--navy); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+.role-badge {
+  display: inline-flex; align-items: center; min-height: 22px; padding: 3px 8px;
+  color: var(--navy); background: var(--blue-soft); border: 1px solid #d7e0eb; border-radius: 3px;
+  font-size: 10px; line-height: 1.2; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+}
+.role-badge.role-admin { color: #7a5c06; background: #fdf6dd; border-color: #ecdca5; }
+.role-badge.role-developer { color: #4a3f86; background: #f0eefb; border-color: #d8d2f2; }
+.panel-link {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 7px 11px;
+  color: var(--navy); background: #fff; border: 1px solid var(--line-dark); border-radius: 4px;
+  font-size: 12px; line-height: 1.2; font-weight: 700; text-decoration: none;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.panel-link:hover { background: var(--blue-soft); border-color: #9eaec2; }
+.panel-link:focus-visible { outline: 3px solid rgba(33, 59, 107, .25); outline-offset: 2px; }
+
+.announcement-list { display: grid; gap: 8px; margin-bottom: 18px; }
+.announcement { padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--navy); border-radius: var(--radius); }
+.announcement.is-penting { border-left-color: var(--gold); }
+.announcement.is-urgent { border-left-color: var(--red); background: #fffafa; }
+.announcement-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.announcement-head h2 { margin: 0; color: #2b384d; font-size: 14px; }
+.announcement-date { color: var(--muted); font-size: 11px; }
+.announcement p { margin: 6px 0 0; color: #4f5d71; font-size: 12.5px; white-space: pre-line; }
+.announcement-tag { display: inline-flex; padding: 2px 7px; margin-left: 8px; color: #7a5c06; background: #fdf6dd; border: 1px solid #e6d9a8; border-radius: 3px; font-size: 10px; font-weight: 700; }
+
+@media (max-width: 620px) {
+  .panel-link { padding: 6px 9px; font-size: 11px; }
+}
