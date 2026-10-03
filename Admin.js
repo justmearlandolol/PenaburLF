@@ -22,78 +22,78 @@ const CATEGORY_OPTIONS = [
 
 const ROLE_RANK = { user: 0, staff: 1, moderator: 2, admin: 3, developer: 4 };
 const ROLE_LABELS = {
-  user: "Pengguna",
-  staff: "Petugas lapangan",
+  user: "Siswa / Pengguna",
+  staff: "Petugas Pos",
   moderator: "Moderator",
   admin: "Admin",
   developer: "Developer"
 };
 
 const STATUS_LABELS = {
-  pending: "Menunggu verifikasi",
-  available: "Tersedia",
-  claimed: "Sudah diklaim",
-  archived: "Diarsipkan",
-  rejected: "Ditolak",
-  under_review: "Dalam peninjauan",
-  matched: "Cocok",
-  resolved: "Selesai",
+  pending: "Belum diperiksa",
+  available: "Ada di pos",
+  claimed: "Ada yang mengaku",
+  archived: "Disimpan",
+  rejected: "Tidak ditampilkan",
+  under_review: "Sedang diperiksa",
+  matched: "Sudah ada pasangan",
+  resolved: "Sudah diambil",
   approved: "Disetujui",
-  completed: "Selesai",
-  suggested: "Rekomendasi",
-  confirmed: "Terkonfirmasi",
-  dismissed: "Diabaikan",
-  verified: "Terverifikasi",
-  terbuka: "Terbuka",
-  ditinjau: "Ditinjau",
+  completed: "Sudah diambil",
+  suggested: "Saran sistem",
+  confirmed: "Sudah dicocokkan",
+  dismissed: "Dilewati",
+  verified: "Sudah diperiksa",
+  terbuka: "Baru",
+  ditinjau: "Sedang diperiksa",
   selesai: "Selesai"
 };
 
-const LEVEL_LABELS = { info: "Informasi", penting: "Penting", urgent: "Urgent" };
-
 const ACTION_LABELS = {
-  ubah_status: "Ubah status",
+  ubah_status: "Ubah status barang",
   tambah_found: "Tambah barang temuan",
-  tambah_lost: "Tambah laporan kehilangan",
+  tambah_lost: "Tambah laporan hilang",
   hapus_found: "Hapus barang temuan",
-  hapus_lost: "Hapus laporan kehilangan",
-  ubah_foto_found: "Ubah foto barang",
-  ubah_foto_lost: "Ubah foto laporan",
-  hapus_foto_found: "Hapus foto barang",
-  hapus_foto_lost: "Hapus foto laporan",
+  hapus_lost: "Hapus laporan hilang",
+  ubah_foto_found: "Ganti gambar barang",
+  ubah_foto_lost: "Ganti gambar laporan",
+  hapus_foto_found: "Hapus gambar barang",
+  hapus_foto_lost: "Hapus gambar laporan",
   buat_pengumuman: "Buat pengumuman",
   ubah_pengumuman: "Ubah pengumuman",
   hapus_pengumuman: "Hapus pengumuman",
-  terbitkan_pengumuman: "Terbitkan pengumuman",
-  tarik_pengumuman: "Tarik pengumuman",
-  review_klaim: "Review klaim",
+  terbitkan_pengumuman: "Tampilkan pengumuman",
+  tarik_pengumuman: "Sembunyikan pengumuman",
+  review_klaim: "Periksa klaim",
   serah_terima: "Serah terima barang",
-  konfirmasi_pencocokan: "Konfirmasi pencocokan",
-  abaikan_pencocokan: "Abaikan pencocokan",
-  ubah_role: "Ubah role pengguna",
-  blokir_pengguna: "Blokir pengguna",
-  buka_blokir: "Buka blokir pengguna",
-  kirim_notifikasi: "Kirim notifikasi"
+  konfirmasi_pencocokan: "Cocokkan barang",
+  abaikan_pencocokan: "Lewati saran",
+  ubah_role: "Ubah jabatan pengguna",
+  blokir_pengguna: "Blokir akun",
+  buka_blokir: "Buka blokir akun",
+  kirim_notifikasi: "Kirim pesan"
 };
 
-const TICKET_CATEGORIES = ["Percakapan pengguna", "Laporan konten", "Penipuan / pemerasan", "Barang berharga", "Lainnya"];
+const LEVEL_LABELS = { info: "Biasa", penting: "Penting", urgent: "Sangat penting" };
+
+const TICKET_CATEGORIES = ["Percakapan tidak sopan", "Laporan palsu", "Konten tidak pantas", "Barang berharga", "Lainnya"];
 const TICKET_STATUSES = ["terbuka", "ditinjau", "selesai"];
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "Ringkasan", min: "staff" },
-  { key: "lost", label: "Barang hilang", min: "moderator" },
-  { key: "found", label: "Barang temuan", min: "staff" },
-  { key: "matches", label: "Pencocokan pintar", min: "moderator" },
-  { key: "claims", label: "Klaim & serah terima", min: "staff" },
-  { key: "users", label: "Pengguna", min: "admin" },
-  { key: "announcements", label: "Pengumuman", min: "admin" },
-  { key: "communication", label: "Notifikasi & tiket", min: "moderator" },
-  { key: "audit", label: "Audit aktivitas", min: "admin" }
+  { key: "dashboard", label: "\u2302 Beranda", min: "staff" },
+  { key: "lost", label: "\uD83D\uDD0D Barang Hilang", min: "moderator" },
+  { key: "found", label: "\uD83C\uDF92 Barang Ditemukan", min: "staff" },
+  { key: "matches", label: "\uD83D\uDD17 Cocokkan Barang", min: "moderator" },
+  { key: "claims", label: "\uD83E\uDD1D Klaim & Pengambilan", min: "staff" },
+  { key: "users", label: "\uD83D\uDC65 Pengguna", min: "admin" },
+  { key: "announcements", label: "\uD83D\uDCE2 Pengumuman", min: "admin" },
+  { key: "communication", label: "\u2709 Pesan & Masalah", min: "moderator" },
+  { key: "audit", label: "\uD83D\uDCDD Catatan Aktivitas", min: "admin" }
 ];
 
 const SOURCES = [
-  { key: "found", table: "found_items", columns: "*", limit: 400, bucket: "found-items" },
-  { key: "lost", table: "lost_reports", columns: "*", limit: 400, bucket: "lost-reports" },
+  { key: "found", table: "found_items", columns: "*", limit: 400 },
+  { key: "lost", table: "lost_reports", columns: "*", limit: 400 },
   { key: "claims", table: "claims", columns: "*", limit: 400 },
   { key: "profiles", table: "profiles", columns: "id, full_name, email, role, blocked, blocked_reason, blocked_at, last_seen_at, created_at", limit: 400 },
   { key: "matches", table: "item_matches", columns: "*", limit: 300 },
@@ -105,6 +105,16 @@ const SOURCES = [
   { key: "audit", table: "audit_logs", columns: "*", limit: 300 }
 ];
 
+const DEFAULT_FILTERS = {
+  found: { search: "", category: "all", status: "all", color: "", image: "all" },
+  lost: { search: "", category: "all", status: "all", color: "", image: "all" },
+  claims: { search: "", status: "all" },
+  users: { search: "", role: "all", status: "all" },
+  audit: { search: "", action: "all" },
+  communication: { status: "all" },
+  matches: { min: "60" }
+};
+
 const state = {
   client: null,
   user: null,
@@ -113,22 +123,14 @@ const state = {
   view: "dashboard",
   hydratingUserId: null,
   loadError: "",
-  data: { found: [], lost: [], claims: [], profiles: [], matches: [], announcements: [], handovers: [], tickets: [], notifications: [], history: [], audit: [] },
-  maps: { profiles: {}, found: {}, lost: {}, claims: {} },
-  filters: {
-    found: { search: "", category: "all", status: "all", color: "" },
-    lost: { search: "", category: "all", status: "all", color: "" },
-    claims: { search: "", status: "all" },
-    users: { search: "", role: "all", status: "all" },
-    audit: { search: "", action: "all" },
-    communication: { status: "all" },
-    matches: { min: "60" }
-  },
-  dates: { found: { from: "", to: "" }, lost: { from: "", to: "" } },
+  recoveryMode: false,
   loginMessage: "",
   loginType: "error",
-  recoveryMode: false,
-  pendingImage: false,
+  uploadingKey: "",
+  data: { found: [], lost: [], claims: [], profiles: [], matches: [], announcements: [], handovers: [], tickets: [], notifications: [], history: [], audit: [] },
+  maps: { profiles: {}, found: {}, lost: {}, claims: {} },
+  filters: JSON.parse(JSON.stringify(DEFAULT_FILTERS)),
+  dates: { found: { from: "", to: "" }, lost: { from: "", to: "" } }
 };
 
 const elements = {
@@ -139,8 +141,8 @@ const elements = {
   loginPassword: document.getElementById("login-password"),
   loginSubmit: document.getElementById("login-submit"),
   loginMessage: document.getElementById("login-message"),
-  googleLogin: document.getElementById("google-login"),
   loginMethods: document.getElementById("login-methods"),
+  googleLogin: document.getElementById("google-login"),
   recoveryView: document.getElementById("password-recovery-view"),
   recoveryForm: document.getElementById("recovery-form"),
   recoveryPassword: document.getElementById("recovery-password"),
@@ -172,52 +174,45 @@ function isConfigured() {
   );
 }
 
+let currentLanguage = "id";
+try { currentLanguage = localStorage.getItem("language") === "en" ? "en" : "id"; } catch (error) { currentLanguage = "id"; }
+
 function t(key) {
   const dictionary = currentLanguage === "en"
     ? {
         emailPh: "BPK PENABUR email", passPh: "Password", submit: "Log in", forgot: "Lost password?",
-        oauth: "Log in using your account on:", langLabel: "Language", close: "Close", cookieBtn: "Cookies notice",
+        oauth: "Log in using your account on:", close: "Close", cookieBtn: "Cookies notice",
         cookieTitle: "Session notice",
-        cookieText: "The admin panel keeps your Supabase sign-in in browser storage. Password is never stored by the app.",
-        recTitle: "Reset password", recCopy: "Create a new password for your BPK PENABUR account.",
-        newPassPh: "New password", repeatPh: "Repeat password", save: "Save password", back: "Back to login",
-        recPassLabel: "New password", recRepeatLabel: "Repeat password"
+        cookieText: "The admin panel keeps your Supabase sign-in saved in this browser and signs out when the browser is closed.",
+        save: "Save password", back: "Back to login"
       }
     : {
         emailPh: "Email BPK PENABUR", passPh: "Kata sandi", submit: "Masuk", forgot: "Lupa kata sandi?",
-        oauth: "Masuk menggunakan akun Anda:", langLabel: "Bahasa", close: "Tutup", cookieBtn: "Pemberitahuan cookie",
+        oauth: "Masuk menggunakan akun Anda:", close: "Tutup", cookieBtn: "Pemberitahuan cookie",
         cookieTitle: "Pemberitahuan sesi",
-        cookieText: "Panel admin menyimpan sesi login Supabase di browser. Kata sandi tidak pernah disimpan aplikasi.",
-        recTitle: "Atur ulang kata sandi", recCopy: "Buat kata sandi baru untuk akun BPK PENABUR Anda.",
-        newPassPh: "Kata sandi baru", repeatPh: "Ulangi kata sandi", save: "Simpan kata sandi", back: "Kembali ke login",
-        recPassLabel: "Kata sandi baru", recRepeatLabel: "Ulangi kata sandi"
+        cookieText: "Panel ini menyimpan sesi login Supabase di browser dan otomatis keluar saat browser ditutup.",
+        save: "Simpan kata sandi", back: "Kembali ke login"
       };
   return dictionary[key] || key;
 }
 
-let currentLanguage = "id";
-try { currentLanguage = localStorage.getItem("language") === "en" ? "en" : "id"; } catch (error) { currentLanguage = "id"; }
-
 function applyLanguage() {
   document.documentElement.lang = currentLanguage;
-  const emailInput = document.getElementById("login-email");
-  const passInput = document.getElementById("login-password");
-  const submit = document.getElementById("login-submit");
-  const forgot = document.getElementById("forgot-password");
-  const heading = document.getElementById("oauth-heading");
-  const cookieButton = document.getElementById("cookie-notice-button");
-  const cookieClose = document.getElementById("cookie-notice-close");
-  const cookieTitle = document.getElementById("cookie-notice-title");
-  const cookieText = document.getElementById("cookie-notice-text");
-  if (emailInput) emailInput.placeholder = t("emailPh");
-  if (passInput) passInput.placeholder = t("passPh");
-  if (submit) submit.textContent = t("submit");
-  if (forgot) forgot.textContent = t("forgot");
-  if (heading) heading.textContent = t("oauth");
-  if (cookieButton) cookieButton.textContent = t("cookieBtn");
-  if (cookieClose) cookieClose.textContent = t("close");
-  if (cookieTitle) cookieTitle.textContent = t("cookieTitle");
-  if (cookieText) cookieText.textContent = t("cookieText");
+  const pairs = [
+    ["login-email", "placeholder", t("emailPh")],
+    ["login-password", "placeholder", t("passPh")],
+    ["login-submit", "textContent", t("submit")],
+    ["forgot-password", "textContent", t("forgot")],
+    ["oauth-heading", "textContent", t("oauth")],
+    ["cookie-notice-button", "textContent", t("cookieBtn")],
+    ["cookie-notice-close", "textContent", t("close")],
+    ["cookie-notice-title", "textContent", t("cookieTitle")],
+    ["cookie-notice-text", "textContent", t("cookieText")]
+  ];
+  pairs.forEach(([id, property, value]) => {
+    const element = document.getElementById(id);
+    if (element) element[property] = value;
+  });
   const languageSelect = document.getElementById("language-select");
   if (languageSelect) languageSelect.value = currentLanguage;
 }
@@ -227,7 +222,10 @@ function escapeHtml(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[character]);
 }
-function escapeAttribute(value) { return escapeHtml(value); }
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
 
 function isAllowedEmail(value) {
   const email = String(value || "").trim().toLowerCase();
@@ -245,9 +243,9 @@ function atLeast(role, minimum) {
 }
 
 function formatDate(value) {
-  if (!value) return "Belum dicatat";
+  if (!value) return "Belum ada tanggal";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Belum dicatat";
+  if (Number.isNaN(date.getTime())) return "Belum ada tanggal";
   return new Intl.DateTimeFormat("id-ID", {
     day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta"
   }).format(date);
@@ -257,12 +255,12 @@ function relativeTime(value) {
   if (!value) return "Belum ada data";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Belum ada data";
-  const diffDays = Math.floor((Date.now() - date.getTime()) / 86400000);
-  if (diffDays <= 0) return "Hari ini";
-  if (diffDays === 1) return "Kemarin";
-  if (diffDays < 30) return `${diffDays} hari lalu`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} bulan lalu`;
-  return `${Math.floor(diffDays / 365)} tahun lalu`;
+  const days = Math.floor((Date.now() - date.getTime()) / 86400000);
+  if (days <= 0) return "Hari ini";
+  if (days === 1) return "Kemarin";
+  if (days < 30) return `${days} hari lalu`;
+  if (days < 365) return `${Math.floor(days / 30)} bulan lalu`;
+  return `${Math.floor(days / 365)} tahun lalu`;
 }
 
 function toLocalInput(value) {
@@ -314,11 +312,11 @@ function friendlyError(error) {
   if (error instanceof Error && !error.code && error.message) return error.message;
   const code = error && error.code ? String(error.code) : "";
   const message = String(error && error.message ? error.message : "");
-  if (code === "23505") return "Data serupa sudah tercatat sebelumnya.";
-  if (code === "42501" || message.toLowerCase().includes("row-level security")) return "Akses ditolak oleh kebijakan keamanan database. Periksa role akun Anda.";
-  if (message.toLowerCase().includes("failed to fetch")) return "Tidak dapat terhubung ke Supabase. Periksa koneksi internet.";
+  if (code === "23505") return "Datanya sudah ada, jadi tidak bisa disimpan dua kali.";
+  if (code === "42501" || message.toLowerCase().includes("row-level security")) return "Kamu tidak punya izin untuk ini. Cek jabatan akunmu.";
+  if (message.toLowerCase().includes("failed to fetch")) return "Tidak bisa menyambung ke internet atau database. Coba lagi ya.";
   if (message) return message;
-  return "Terjadi kesalahan. Silakan coba lagi.";
+  return "Ada masalah saat menyimpan. Coba lagi ya.";
 }
 
 function setAlert(message, type = "info") {
@@ -340,6 +338,10 @@ function loadingMarkup(text) {
 
 function emptyMarkup(title, description) {
   return `<div class="empty-state"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(description)}</p></div>`;
+}
+
+function helperNote(text) {
+  return `<p class="helper-note"><span aria-hidden="true">\u2139\uFE0F</span> ${text}</p>`;
 }
 
 function armSessionLock() {
@@ -449,7 +451,7 @@ async function hydrateUser(user) {
 
   if (!isAllowedEmail(email) || !PANEL_EMAILS.includes(email)) {
     await state.client.auth.signOut();
-    showLogin("Akun ini tidak memiliki akses ke panel admin. Gunakan akun pengelola yang terdaftar.");
+    showLogin("Akun ini tidak bisa masuk ke panel admin. Gunakan akun pengelola yang terdaftar.");
     return;
   }
 
@@ -464,7 +466,7 @@ async function hydrateUser(user) {
     if (error || !profile) {
       console.error("Profil tidak ditemukan:", error);
       await state.client.auth.signOut();
-      showLogin("Profil akun belum tersedia. Pastikan skema Supabase sudah dipasang.");
+      showLogin("Profil akun belum ada. Pastikan file supabase_admin_panel.sql sudah dijalankan.");
       return;
     }
     if (profile.blocked) {
@@ -487,7 +489,7 @@ async function hydrateUser(user) {
     showPanel();
     await refreshAll();
     renderView();
-    if (state.role === "user") setAlert("Role akun pengelola ini belum tercatat di database. Jalankan berkas supabase_admin_panel.sql di Supabase SQL Editor.", "error");
+    if (state.role === "user") setAlert("Jabatan akun pengelola ini belum tercatat di database. Jalankan file supabase_admin_panel.sql di Supabase SQL Editor.", "error");
   } catch (error) {
     console.error("Profil tidak dapat dimuat:", error);
     await state.client.auth.signOut();
@@ -503,17 +505,17 @@ async function handleLogin(event) {
   const password = elements.loginPassword.value;
 
   if (!isAllowedEmail(email)) {
-    showLogin("Gunakan akun email BPK PENABUR untuk masuk.");
+    showLogin("Pakai email BPK PENABUR untuk masuk ya.");
     elements.loginEmail.focus();
     return;
   }
   if (!PANEL_EMAILS.includes(email)) {
-    showLogin("Akun ini tidak memiliki akses ke panel admin.");
+    showLogin("Akun ini tidak bisa masuk ke panel admin.");
     elements.loginEmail.focus();
     return;
   }
   if (!password) {
-    showLogin("Masukkan kata sandi akun Anda.");
+    showLogin("Isi kata sandimu dulu ya.");
     elements.loginPassword.focus();
     return;
   }
@@ -526,7 +528,7 @@ async function handleLogin(event) {
     const { data, error } = await state.client.auth.signInWithPassword({ email, password });
     if (error) {
       const lower = String(error.message || "").toLowerCase();
-      showLogin(lower.includes("invalid") ? "Email atau kata sandi tidak sesuai." : friendlyError(error));
+      showLogin(lower.includes("invalid") ? "Email atau kata sandinya salah." : friendlyError(error));
       return;
     }
     if (data && data.user) await hydrateUser(data.user);
@@ -541,7 +543,7 @@ async function handleLogin(event) {
 async function handleForgotPassword() {
   const email = elements.loginEmail.value.trim().toLowerCase();
   if (!isAllowedEmail(email)) {
-    showLogin("Masukkan email BPK PENABUR yang valid terlebih dahulu.");
+    showLogin("Isi email BPK PENABUR yang benar dulu ya.");
     elements.loginEmail.focus();
     return;
   }
@@ -553,7 +555,7 @@ async function handleForgotPassword() {
     const redirectTo = `${window.location.origin}${window.location.pathname}`;
     const { error } = await state.client.auth.resetPasswordForEmail(email, { redirectTo });
     if (error) throw error;
-    showLogin("Jika email terdaftar, instruksi atur ulang kata sandi akan dikirim ke email tersebut.", "success");
+    showLogin("Kalau emailnya terdaftar, kami akan mengirim cara atur ulang kata sandi ke email itu.", "success");
   } catch (error) {
     showLogin(friendlyError(error));
   } finally {
@@ -576,7 +578,7 @@ async function handleGoogleLogin() {
     if (error) throw error;
   } catch (error) {
     console.error("Google OAuth gagal:", error);
-    showLogin("Google login belum tersedia untuk panel admin.");
+    showLogin("Google login belum tersedia untuk panel ini.");
   } finally {
     button.disabled = false;
     button.innerHTML = originalText;
@@ -603,7 +605,7 @@ async function handleRecoverySubmit(event) {
     return;
   }
   if (password !== confirmation) {
-    showRecoveryMessage("Konfirmasi kata sandi belum cocok.");
+    showRecoveryMessage("Kata sandi dan ulangannya belum sama.");
     elements.recoveryPasswordConfirm.focus();
     return;
   }
@@ -614,7 +616,7 @@ async function handleRecoverySubmit(event) {
   try {
     const { error } = await state.client.auth.updateUser({ password });
     if (error) throw error;
-    state.loginMessage = "Kata sandi berhasil diperbarui. Silakan masuk kembali.";
+    state.loginMessage = "Kata sandi berhasil diganti. Silakan masuk lagi ya.";
     state.loginType = "success";
     elements.recoveryForm.reset();
     const { error: signOutError } = await state.client.auth.signOut();
@@ -668,7 +670,7 @@ async function refreshAll() {
   });
 
   state.loadError = failed.length
-    ? `Sebagian data belum dapat dimuat (${failed.join(", ")}). Jalankan file supabase_admin_panel.sql di Supabase SQL Editor, lalu muat ulang halaman ini.`
+    ? `Sebagian data belum bisa dimuat (${failed.join(", ")}). Jalankan file supabase_admin_panel.sql di Supabase SQL Editor, lalu muat ulang halaman ini.`
     : "";
 
   state.data.found = await attachSignedImages(state.data.found, "found-items");
@@ -706,18 +708,16 @@ async function signedUrl(bucket, path) {
 }
 
 async function uploadImage(file, bucket) {
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error("Gunakan file JPG, PNG, atau WebP.");
-  if (file.size > MAX_IMAGE_BYTES) throw new Error("Ukuran gambar maksimum 5 MB.");
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error("File harus JPG, PNG, atau WebP ya.");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("Ukuran gambar maksimal 5 MB ya.");
   const extension = file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : "webp";
   const randomId = window.crypto && typeof window.crypto.randomUUID === "function"
     ? window.crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const path = `${state.user.id}/${Date.now()}-${randomId}.${extension}`;
-  state.pendingImage = true;
   const { error } = await state.client.storage.from(bucket).upload(path, file, {
     cacheControl: "3600", contentType: file.type, upsert: false
   });
-  state.pendingImage = false;
   if (error) throw error;
   return path;
 }
@@ -756,11 +756,10 @@ function renderRegion() {
 function filterBar(scope, options) {
   const filter = state.filters[scope];
   const dates = state.dates[scope] || { from: "", to: "" };
-  const statusOptions = options.statuses;
   return `
     <div class="panel-filters">
       <div class="filter-control">
-        <label for="filter-search">Cari laporan</label>
+        <label for="filter-search">Cari barang</label>
         <input id="filter-search" type="search" autocomplete="off" data-scope="${scope}" data-field="search" data-kind="text"
           placeholder="${escapeAttribute(options.searchHint)}" value="${escapeAttribute(filter.search)}">
       </div>
@@ -771,24 +770,30 @@ function filterBar(scope, options) {
       <div class="filter-control">
         <label for="filter-status">Status</label>
         <select id="filter-status" data-scope="${scope}" data-field="status" data-kind="value">
-          <option value="all">Semua status</option>${formatSelectOptions(statusOptions, filter.status)}
+          <option value="all">Semua status</option>${formatSelectOptions(options.statuses, filter.status)}
         </select>
       </div>
       <div class="filter-control">
         <label for="filter-color">Warna</label>
         <input id="filter-color" type="text" autocomplete="off" data-scope="${scope}" data-field="color" data-kind="text"
-          placeholder="mis. hitam" value="${escapeAttribute(filter.color)}">
+          placeholder="contoh: hitam" value="${escapeAttribute(filter.color)}">
+      </div>
+      <div class="filter-control">
+        <label for="filter-image">Gambar</label>
+        <select id="filter-image" data-scope="${scope}" data-field="image" data-kind="value">
+          ${formatSelectOptions([["all", "Semua"], ["with", "Sudah ada gambar"], ["without", "Belum ada gambar"]], filter.image)}
+        </select>
       </div>
       <div class="filter-control">
         <label for="filter-from">Tanggal dari</label>
         <input id="filter-from" type="date" data-scope="${scope}" data-field="from" data-kind="date" value="${escapeAttribute(dates.from)}">
       </div>
       <div class="filter-control">
-        <label for="filter-to">Tanggal sampai</label>
+        <label for="filter-to">Sampai tanggal</label>
         <input id="filter-to" type="date" data-scope="${scope}" data-field="to" data-kind="date" value="${escapeAttribute(dates.to)}">
       </div>
       <div class="filter-control" style="align-content:end">
-        <button class="button button-quiet button-small" type="button" data-action="reset-filters" data-scope="${scope}">Reset filter</button>
+        <button class="button button-quiet button-small" type="button" data-action="reset-filters" data-scope="${scope}">Hapus filter</button>
       </div>
     </div>`;
 }
@@ -801,6 +806,8 @@ function matchesFilters(row, scope, dateField, locationField) {
   if (filter.category && filter.category !== "all" && row.category !== filter.category) return false;
   if (filter.status && filter.status !== "all" && row.status !== filter.status) return false;
   if (filter.color && !String(row.color || "").toLowerCase().includes(filter.color.toLowerCase())) return false;
+  if (filter.image === "with" && !row.image_path) return false;
+  if (filter.image === "without" && row.image_path) return false;
 
   const when = new Date(row[dateField] || row.created_at);
   if (dates.from) {
@@ -826,29 +833,37 @@ function matchesFilters(row, scope, dateField, locationField) {
 
 function reporterLine(row) {
   const reporter = state.maps.profiles[row.reported_by];
-  if (!reporter) return "Pelapor: akun tidak tersedia";
-  return `Pelapor: ${escapeHtml(reporter.full_name || reporter.email)} · ${escapeHtml(reporter.email)}`;
+  if (!reporter) return "<span><b>Pelapor:</b> akun tidak ditemukan</span>";
+  const name = reporter.full_name || reporter.email;
+  return `<span><b>Pelapor:</b> ${escapeHtml(name)}</span>`;
+}
+
+function imageUploadKey(meta, id) {
+  return `${meta}:${id}`;
 }
 
 function imageBlock(row, meta) {
-  if (!row.image_path) {
-    return `<div class="record-media">
-      <div class="record-image"><div class="photo-missing">Belum ada foto</div></div>
-      <div class="record-image-actions">
-        <button class="button button-secondary button-small" type="button" data-action="upload-image"
-          data-id="${escapeAttribute(row.id)}" data-meta="${meta}">Tambah foto</button>
+  const hasImage = Boolean(row.image_path);
+  const busy = state.uploadingKey === imageUploadKey(meta, row.id);
+  const label = hasImage ? "Ganti gambar" : "Upload gambar";
+  const preview = hasImage
+    ? (row.imageUrl ? renderImage(row.imageUrl, `Gambar ${row.name || "barang"}`, "") : `<div class="photo-placeholder">Gambar tidak bisa dibuka</div>`)
+    : `<div class="photo-placeholder"><span class="photo-icon" aria-hidden="true">\uD83D\uDDBC\uFE0F</span><span>Belum ada gambar</span></div>`;
+  const deleteButton = hasImage
+    ? `<button class="button button-danger button-small" type="button" data-action="delete-image" data-id="${escapeAttribute(row.id)}" data-meta="${meta}">Hapus gambar</button>`
+    : "";
+  return `
+    <div class="photo-box">
+      <div class="photo-frame${hasImage ? "" : " is-empty"}">${preview}</div>
+      <div class="photo-actions">
+        <label class="upload-control${busy ? " is-busy" : ""}">
+          <input type="file" accept="image/jpeg,image/png,image/webp" data-action="upload-image" data-id="${escapeAttribute(row.id)}" data-meta="${meta}">
+          <span class="button button-primary button-small">${busy ? "Mengunggah…" : `\uD83D\uDCF7 ${label}`}</span>
+        </label>
+        ${deleteButton}
+        <p class="photo-hint">Pilih file JPG, PNG, atau WebP. Ukuran maksimal 5 MB.</p>
       </div>
     </div>`;
-  }
-  return `<div class="record-media">
-    <div class="record-image">${row.imageUrl ? renderImage(row.imageUrl, `Foto ${row.name || "barang"}`, "") : `<div class="photo-missing">Foto tidak dapat dimuat</div>`}</div>
-    <div class="record-image-actions">
-      <button class="button button-secondary button-small" type="button" data-action="upload-image"
-        data-id="${escapeAttribute(row.id)}" data-meta="${meta}">Ganti foto</button>
-      <button class="button button-danger button-small" type="button" data-action="delete-image"
-        data-id="${escapeAttribute(row.id)}" data-meta="${meta}">Hapus foto</button>
-    </div>
-  </div>`;
 }
 
 function actionButton(label, action, id, extra = "", style = "button-secondary") {
@@ -866,7 +881,7 @@ function matchSummary(itemId, type) {
     const other = type === "found" ? state.maps.lost[row.lost_report_id] : state.maps.found[row.found_item_id];
     return other ? `“${escapeHtml(other.name || "tanpa nama")}”` : "";
   }).filter(Boolean).join(", ");
-  return detail ? `<p class="record-text"><strong>Dicocokkan dengan:</strong> ${detail}</p>` : "";
+  return detail ? `<p class="record-text"><strong>Sudah dicocokkan dengan:</strong> ${detail}</p>` : "";
 }
 
 const VIEWS = {};
@@ -877,8 +892,8 @@ VIEWS.dashboard = {
       <div class="page-heading">
         <div>
           <p class="section-kicker">Panel pengelola</p>
-          <h1>Ringkasan operasional</h1>
-          <p>Pantau laporan masuk, hasil pengembalian barang, dan antrean yang membutuhkan tindakan petugas.</p>
+          <h1>Beranda</h1>
+          <p>Halo! Di sini kamu bisa lihat barang hilang, barang temuan, dan hal yang harus segera dikerjakan.</p>
         </div>
         <button class="button button-secondary" type="button" data-action="refresh-data">Muat ulang data</button>
       </div>
@@ -918,61 +933,81 @@ VIEWS.dashboard = {
     const maxCategory = topCategories.length ? topCategories[0][1] : 0;
 
     const activity = state.data.audit.slice(0, 6);
+    const steps = [
+      ["Barang Ditemukan", "Lihat barang yang ditemukan orang lain. Periksa gambarnya, lalu setujui atau tolak.", "found"],
+      ["Barang Hilang", "Lihat laporan kehilangan dari siswa. Cocokkan dengan barang temuan.", "lost"],
+      ["Cocokkan Barang", "Sistem mencarikan pasangan barang hilang dan barang temuan. Kamu tinggal menilai benar atau tidak.", "matches"],
+      ["Klaim & Pengambilan", "Periksa bukti kepemilikan, lalu catat saat barang diserahkan ke pemiliknya.", "claims"]
+    ];
 
     return `
+      <section class="card help-card">
+        <h2>Ada 4 hal utama yang bisa kamu kerjakan</h2>
+        <ol class="step-list">
+          ${steps.map(([title, text, view]) => `
+            <li>
+              <div>
+                <strong>${escapeHtml(title)}</strong>
+                <span>${escapeHtml(text)}</span>
+              </div>
+              <button class="button button-secondary button-small" type="button" data-action="go-view" data-view="${view}">Buka</button>
+            </li>`).join("")}
+        </ol>
+      </section>
+
       <div class="stat-grid">
-        ${statCard("Barang hilang bulan ini", lostThisMonth, `Total laporan kehilangan ${lost.length}`)}
-        ${statCard("Barang temuan bulan ini", foundThisMonth, `Total barang temuan ${found.length}`)}
-        ${statCard("Tingkat pengembalian", `${successRate}%`, `${returned} barang berstatus selesai`)}
-        ${statCard("Rata-rata waktu simpan", averageDays === null ? "—" : `${averageDays} hari`, durations.length ? `${durations.length} serah terima tercatat` : "Belum ada serah terima")}
-        ${statCard("Klaim menunggu", pendingClaims, "Perlu verifikasi bukti kepemilikan")}
-        ${statCard("Perlu moderasi", pendingModeration, "Laporan berstatus menunggu")}
-        ${statCard("Akun diblokir", blockedUsers, `${state.data.profiles.length} pengguna terdaftar`)}
-        ${statCard("Tiket terbuka", state.data.tickets.filter((row) => row.status !== "selesai").length, "Tiket moderasi belum ditutup")}
+        ${statCard("Barang hilang bulan ini", lostThisMonth, `Semua laporan hilang: ${lost.length}`)}
+        ${statCard("Barang ditemukan bulan ini", foundThisMonth, `Semua barang temuan: ${found.length}`)}
+        ${statCard("Barang yang sudah diambil", `${successRate}%`, `${returned} barang selesai`)}
+        ${statCard("Rata-rata lama disimpan", averageDays === null ? "—" : `${averageDays} hari`, durations.length ? `Dari ${durations.length} serah terima` : "Belum ada serah terima")}
+        ${statCard("Klaim menunggu", pendingClaims, "Harus segera diperiksa")}
+        ${statCard("Laporan belum diperiksa", pendingModeration, "Menunggu persetujuanmu")}
+        ${statCard("Akun diblokir", blockedUsers, `Dari ${state.data.profiles.length} pengguna`)}
+        ${statCard("Masalah belum selesai", state.data.tickets.filter((row) => row.status !== "selesai").length, "Dari menu Pesan & Masalah")}
       </div>
 
       <div class="panel-grid">
         <section class="card">
-          <h2>Kategori paling sering dilaporkan <span>hilang &amp; temuan</span></h2>
+          <h2>Barang yang paling sering hilang <span>hilang + temuan</span></h2>
           ${topCategories.length ? `<div class="chart">${topCategories.map(([category, count], index) => `
             <div class="chart-row">
               <span class="chart-label">${escapeHtml(category)}</span>
               <span class="chart-track"><span class="chart-fill${index % 2 ? " is-alt" : ""}" style="width:${Math.max(6, Math.round((count / maxCategory) * 100))}%"></span></span>
               <span class="chart-value">${count}</span>
             </div>`).join("")}</div>`
-            : emptyMarkup("Belum ada data kategori", "Grafik muncul setelah ada laporan dari pengguna.")}
+            : emptyMarkup("Belum ada data", "Grafik muncul setelah ada laporan dari pengguna.")}
         </section>
 
         <section class="card">
-          <h2>Antrean tindakan</h2>
+          <h2>Yang harus segera dikerjakan</h2>
           <ul class="activity-list">
-            ${actionQueue("Laporan menunggu moderasi", pendingModeration, "lost", "Periksa laporan baru sebelum tayang.")}
-            ${actionQueue("Klaim menunggu verifikasi", pendingClaims, "claims", "Cocokkan bukti kepemilikan dengan barang.")}
-            ${actionQueue("Pencocokan belum ditinjau", unreviewedMatches(), "matches", "Rekomendasi otomatis sistem menunggu validasi.")}
-            ${actionQueue("Foto bukti klaim belum diperiksa", claimsWithEvidence(), "claims", "Bukti unggahan pemohon tersedia.")}
+            ${actionQueue("Laporan belum diperiksa", pendingModeration, "found", "Setujui atau tolak laporan baru.")}
+            ${actionQueue("Klaim menunggu bukti", pendingClaims, "claims", "Periksa bukti kepemilikan pemohon.")}
+            ${actionQueue("Saran pencocokan baru", unreviewedMatches(), "matches", "Nilai apakah pasangannya benar.")}
+            ${actionQueue("Bukti klaim belum dibuka", claimsWithEvidence(), "claims", "Ada berkas bukti dari pemohon.")}
           </ul>
         </section>
       </div>
 
       <div class="panel-grid">
         <section class="card">
-          <h2>Aktivitas pengelola terbaru</h2>
+          <h2>Apa yang baru dilakukan pengelola</h2>
           ${activity.length ? `<ul class="activity-list">${activity.map((row) => `
             <li class="activity-item">
               <strong>${escapeHtml(ACTION_LABELS[row.action] || row.action)}</strong>
               <span>${escapeHtml(row.actor_email || "sistem")} · ${escapeHtml(formatDate(row.created_at))}</span>
             </li>`).join("")}</ul>`
-            : emptyMarkup("Belum ada aktivitas", "Log audit akan terisi setelah pengelola melakukan tindakan.")}
+            : emptyMarkup("Belum ada aktivitas", "Catatan muncul setelah pengelola melakukan tindakan.")}
         </section>
 
         <section class="card">
-          <h2>Barang terbaru masuk</h2>
+          <h2>Barang terbaru yang masuk</h2>
           ${found.length ? `<ul class="activity-list">${found.slice(0, 6).map((row) => `
             <li class="activity-item">
               <strong>${escapeHtml(row.name || "Tanpa nama")}</strong>
               <span>${escapeHtml(row.category || "Tanpa kategori")} · ${escapeHtml(formatDate(row.created_at))}</span>
             </li>`).join("")}</ul>`
-            : emptyMarkup("Belum ada barang temuan", "Laporan barang ditemukan akan tampil di sini.")}
+            : emptyMarkup("Belum ada barang temuan", "Barang temuan akan tampil di sini.")}
         </section>
       </div>`;
   }
@@ -1013,17 +1048,16 @@ VIEWS.lost = {
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Manajemen laporan</p>
-          <h1>Laporan barang hilang</h1>
-          <p>Verifikasi, moderasi, dan pantau seluruh laporan kehilangan yang dikirim pengguna.</p>
+          <p class="section-kicker">Barang hilang</p>
+          <h1>Barang Hilang</h1>
+          <p>Semua laporan dari siswa yang kehilangan barang. Kamu bisa menyetujui, menolak, mengedit, dan memasang gambar.</p>
         </div>
-        <div class="form-actions" style="margin:0;padding:0;border:0">
-          <button class="button button-secondary" type="button" data-action="export" data-scope="lost">Ekspor CSV</button>
-        </div>
+        <button class="button button-secondary" type="button" data-action="export" data-scope="lost">Unduh daftar (Excel/CSV)</button>
       </div>
+      ${helperNote("Tombol <b>Setujui / Tolak</b> untuk memeriksa laporan. Tombol <b>Upload gambar</b> ada di kartu barang.")}
       ${filterBar("lost", {
-        searchHint: "Nama barang, deskripsi, lokasi, pelapor…",
-        statuses: [["pending", "Menunggu verifikasi"], ["under_review", "Dalam peninjauan"], ["matched", "Cocok"], ["resolved", "Selesai"], ["rejected", "Ditolak"]]
+        searchHint: "Tulis nama barang, warna, lokasi…",
+        statuses: [["pending", "Belum diperiksa"], ["under_review", "Sedang diperiksa"], ["matched", "Sudah ada pasangan"], ["resolved", "Sudah diambil"], ["rejected", "Tidak ditampilkan"]]
       })}
       <div id="view-region"></div>`;
   },
@@ -1033,29 +1067,29 @@ VIEWS.lost = {
       .sort((a, b) => new Date(b.lost_at || b.created_at) - new Date(a.lost_at || a.created_at));
 
     if (state.loadError) return loadingMarkup("Data belum lengkap. Periksa skema database.");
-    if (!rows.length) return emptyMarkup("Tidak ada laporan yang cocok", "Ubah kata kunci atau filter yang dipakai.");
-    return `<div class="list-heading"><h2>Daftar laporan</h2><span>${rows.length} laporan</span></div>
-      <div class="record-list">${rows.map((row) => lostCard(row, row.status)).join("")}</div>`;
+    if (!rows.length) return emptyMarkup("Belum ada laporan yang cocok", "Coba ubah kata pencarian atau hapus filternya.");
+    return `<div class="list-heading"><h2>Daftar laporan kehilangan</h2><span>${rows.length} laporan</span></div>
+      <div class="record-list">${rows.map((row) => lostCard(row)).join("")}</div>`;
   }
 };
 
-function lostCard(row, status) {
+function lostCard(row) {
   const canModerate = atLeast(state.role, "moderator");
   const actions = [];
   if (canModerate) {
     if (row.status === "pending") {
-      actions.push(actionButton("Mulai tinjau", "lost-status", row.id, ' data-status="under_review"', "button-primary"));
+      actions.push(actionButton("Periksa laporan", "lost-status", row.id, ' data-status="under_review"', "button-primary"));
       actions.push(actionButton("Tolak", "lost-status", row.id, ' data-status="rejected"', "button-danger"));
     } else if (row.status === "under_review") {
-      actions.push(actionButton("Tandai cocok", "lost-status", row.id, ' data-status="matched"', "button-primary"));
-      actions.push(actionButton("Selesaikan", "lost-status", row.id, ' data-status="resolved"'));
+      actions.push(actionButton("Sudah ada pasangan", "lost-status", row.id, ' data-status="matched"', "button-primary"));
+      actions.push(actionButton("Tandai selesai", "lost-status", row.id, ' data-status="resolved"'));
       actions.push(actionButton("Tolak", "lost-status", row.id, ' data-status="rejected"', "button-danger"));
     } else if (row.status === "matched") {
       actions.push(actionButton("Tandai selesai", "lost-status", row.id, ' data-status="resolved"', "button-primary"));
     } else if (row.status === "rejected") {
-      actions.push(actionButton("Tayangkan kembali", "lost-status", row.id, ' data-status="under_review"'));
+      actions.push(actionButton("Tampilkan lagi", "lost-status", row.id, ' data-status="under_review"'));
     }
-    actions.push(actionButton("Edit", "edit-lost", row.id));
+    actions.push(actionButton("Edit laporan", "edit-lost", row.id));
     actions.push(actionButton("Riwayat", "show-history", row.id, ' data-type="lost"'));
   }
   if (atLeast(state.role, "admin")) {
@@ -1066,16 +1100,16 @@ function lostCard(row, status) {
     <div class="record-main">
       <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(row.name || "Laporan tanpa nama")}</h3></div>
       <div class="record-meta">
-        <span>${escapeHtml(row.category || "Tanpa kategori")}</span>
-        <span>Terakhir terlihat: ${escapeHtml(row.last_seen_location || "Belum dicatat")}</span>
-        <span>Waktu hilang: ${escapeHtml(formatDate(row.lost_at || row.created_at))}</span>
-        ${row.color ? `<span>Warna: ${escapeHtml(row.color)}</span>` : ""}
+        <span><b>Kategori:</b> ${escapeHtml(row.category || "belum diisi")}</span>
+        <span><b>Terakhir terlihat di:</b> ${escapeHtml(row.last_seen_location || "belum diisi")}</span>
+        <span><b>Hilang pada:</b> ${escapeHtml(formatDate(row.lost_at || row.created_at))}</span>
+        ${row.color ? `<span><b>Warna:</b> ${escapeHtml(row.color)}</span>` : ""}
+        ${reporterLine(row)}
       </div>
-      <p class="record-meta">${reporterLine(row)}</p>
-      ${row.description ? `<p class="record-text">${escapeHtml(row.description)}</p>` : ""}
-      ${row.distinctive_features ? `<p class="record-text"><strong>Ciri khusus:</strong> ${escapeHtml(row.distinctive_features)}</p>` : ""}
-      ${row.additional_info ? `<p class="record-text"><strong>Informasi tambahan:</strong> ${escapeHtml(row.additional_info)}</p>` : ""}
       ${imageBlock(row, "lost")}
+      ${row.description ? `<p class="record-text"><strong>Ciri-ciri:</strong> ${escapeHtml(row.description)}</p>` : ""}
+      ${row.distinctive_features ? `<p class="record-text"><strong>Ciri khusus:</strong> ${escapeHtml(row.distinctive_features)}</p>` : ""}
+      ${row.additional_info ? `<p class="record-text"><strong>Info tambahan:</strong> ${escapeHtml(row.additional_info)}</p>` : ""}
       ${matchSummary(row.id, "lost")}
     </div>
     ${actions.length ? `<div class="record-actions">${actions.join("")}</div>` : ""}
@@ -1087,17 +1121,16 @@ VIEWS.found = {
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Manajemen laporan</p>
-          <h1>Barang temuan</h1>
-          <p>Kelola data barang yang ditemukan: moderasi tayang, perbarui foto, dan catat lokasi penyimpanan.</p>
+          <p class="section-kicker">Barang temuan</p>
+          <h1>Barang Ditemukan</h1>
+          <p>Barang yang sudah ditemukan dan sekarang disimpan di pos Lost &amp; Found.</p>
         </div>
-        <div class="form-actions" style="margin:0;padding:0;border:0">
-          <button class="button button-secondary" type="button" data-action="export" data-scope="found">Ekspor CSV</button>
-        </div>
+        <button class="button button-secondary" type="button" data-action="export" data-scope="found">Unduh daftar (Excel/CSV)</button>
       </div>
+      ${helperNote("Setelah barang disetujui, barang otomatis muncul di halaman siswa. Gambar bisa kamu tambah atau ganti kapan saja.")}
       ${filterBar("found", {
-        searchHint: "Nama barang, ciri, lokasi temuan…",
-        statuses: [["pending", "Menunggu verifikasi"], ["available", "Tersedia"], ["claimed", "Sudah diklaim"], ["matched", "Cocok"], ["resolved", "Selesai"], ["archived", "Diarsipkan"], ["rejected", "Ditolak"]]
+        searchHint: "Tulis nama barang, warna, tempat ditemukan…",
+        statuses: [["pending", "Belum diperiksa"], ["available", "Ada di pos"], ["claimed", "Ada yang mengaku"], ["matched", "Sudah ada pasangan"], ["resolved", "Sudah diambil"], ["archived", "Disimpan"], ["rejected", "Tidak ditampilkan"]]
       })}
       <div id="view-region"></div>`;
   },
@@ -1107,8 +1140,8 @@ VIEWS.found = {
       .sort((a, b) => new Date(b.found_at || b.created_at) - new Date(a.found_at || a.created_at));
 
     if (state.loadError) return loadingMarkup("Data belum lengkap. Periksa skema database.");
-    if (!rows.length) return emptyMarkup("Tidak ada barang yang cocok", "Ubah kata kunci atau filter yang dipakai.");
-    return `<div class="list-heading"><h2>Daftar barang</h2><span>${rows.length} barang</span></div>
+    if (!rows.length) return emptyMarkup("Belum ada barang yang cocok", "Coba ubah kata pencarian atau hapus filternya.");
+    return `<div class="list-heading"><h2>Daftar barang temuan</h2><span>${rows.length} barang</span></div>
       <div class="record-list">${rows.map((row) => foundCard(row)).join("")}</div>`;
   }
 };
@@ -1118,21 +1151,21 @@ function foundCard(row) {
   const canHandle = atLeast(state.role, "staff");
   const actions = [];
   if (row.status === "pending" && canModerate) {
-    actions.push(actionButton("Setujui & tayangkan", "found-status", row.id, ' data-status="available"', "button-primary"));
+    actions.push(actionButton("Setujui & tampilkan", "found-status", row.id, ' data-status="available"', "button-primary"));
     actions.push(actionButton("Tolak", "found-status", row.id, ' data-status="rejected"', "button-danger"));
   } else if (row.status === "available") {
-    if (canHandle) actions.push(actionButton("Tandai diklaim", "found-status", row.id, ' data-status="claimed"', "button-primary"));
-    if (canModerate) actions.push(actionButton("Arsipkan", "found-status", row.id, ' data-status="archived"'));
+    if (canHandle) actions.push(actionButton("Ada yang mengaku", "found-status", row.id, ' data-status="claimed"', "button-primary"));
+    if (canModerate) actions.push(actionButton("Simpan ke gudang", "found-status", row.id, ' data-status="archived"'));
   } else if (row.status === "claimed") {
-    if (canHandle) actions.push(actionButton("Sudah diserahkan", "found-status", row.id, ' data-status="resolved"', "button-primary"));
-    if (canModerate) actions.push(actionButton("Arsipkan", "found-status", row.id, ' data-status="archived"'));
+    if (canHandle) actions.push(actionButton("Sudah diambil", "found-status", row.id, ' data-status="resolved"', "button-primary"));
+    if (canModerate) actions.push(actionButton("Simpan ke gudang", "found-status", row.id, ' data-status="archived"'));
   } else if (row.status === "matched") {
-    if (canHandle) actions.push(actionButton("Tandai diklaim", "found-status", row.id, ' data-status="claimed"', "button-primary"));
+    if (canHandle) actions.push(actionButton("Ada yang mengaku", "found-status", row.id, ' data-status="claimed"', "button-primary"));
   } else if (row.status === "rejected") {
-    if (canModerate) actions.push(actionButton("Tayangkan", "found-status", row.id, ' data-status="available"'));
+    if (canModerate) actions.push(actionButton("Tampilkan", "found-status", row.id, ' data-status="available"'));
   }
   if (canModerate) {
-    actions.push(actionButton("Edit", "edit-found", row.id));
+    actions.push(actionButton("Edit barang", "edit-found", row.id));
     actions.push(actionButton("Riwayat", "show-history", row.id, ' data-type="found"'));
   }
   if (atLeast(state.role, "admin")) {
@@ -1143,16 +1176,16 @@ function foundCard(row) {
     <div class="record-main">
       <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(row.name || "Barang tanpa nama")}</h3></div>
       <div class="record-meta">
-        <span>${escapeHtml(row.category || "Tanpa kategori")}</span>
-        <span>Lokasi temuan: ${escapeHtml(row.location_found || "Belum dicatat")}</span>
-        <span>Ditemukan: ${escapeHtml(formatDate(row.found_at || row.created_at))}</span>
-        ${row.color ? `<span>Warna: ${escapeHtml(row.color)}</span>` : ""}
-        ${row.storage_location ? `<span>Penyimpanan: ${escapeHtml(row.storage_location)}</span>` : ""}
+        <span><b>Kategori:</b> ${escapeHtml(row.category || "belum diisi")}</span>
+        <span><b>Ditemukan di:</b> ${escapeHtml(row.location_found || "belum diisi")}</span>
+        <span><b>Ditemukan pada:</b> ${escapeHtml(formatDate(row.found_at || row.created_at))}</span>
+        ${row.color ? `<span><b>Warna:</b> ${escapeHtml(row.color)}</span>` : ""}
+        ${row.storage_location ? `<span><b>Disimpan di:</b> ${escapeHtml(row.storage_location)}</span>` : ""}
+        ${reporterLine(row)}
       </div>
-      <p class="record-meta">${reporterLine(row)}</p>
-      ${row.description ? `<p class="record-text">${escapeHtml(row.description)}</p>` : ""}
-      ${row.distinctive_features ? `<p class="record-text"><strong>Ciri khusus:</strong> ${escapeHtml(row.distinctive_features)}</p>` : ""}
       ${imageBlock(row, "found")}
+      ${row.description ? `<p class="record-text"><strong>Deskripsi:</strong> ${escapeHtml(row.description)}</p>` : ""}
+      ${row.distinctive_features ? `<p class="record-text"><strong>Ciri khusus:</strong> ${escapeHtml(row.distinctive_features)}</p>` : ""}
       ${matchSummary(row.id, "found")}
     </div>
     ${actions.length ? `<div class="record-actions">${actions.join("")}</div>` : ""}
@@ -1161,43 +1194,42 @@ function foundCard(row) {
 
 VIEWS.matches = {
   shell() {
-    const minimum = state.filters.matches.min;
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Pencocokan pintar</p>
-          <h1>Rekomendasi &amp; pencocokan manual</h1>
-          <p>Sistem menghitung kemiripan kategori, warna, lokasi, nama barang, dan jarak waktu antara laporan hilang dan barang temuan.</p>
+          <p class="section-kicker">Cocokkan barang</p>
+          <h1>Cocokkan Barang Hilang &amp; Temuan</h1>
+          <p>Sistem menghitung kemiripan nama, kategori, warna, lokasi, dan waktu. Kamu hanya perlu menilai benar atau tidak.</p>
         </div>
         <div class="form-actions" style="margin:0;padding:0;border:0">
-          <label class="field" style="min-width:150px">
-            <span>Ambang kemiripan</span>
+          <label class="field" style="min-width:160px">
+            <span>Kemiripan minimal</span>
             <select class="inline-select" data-scope="matches" data-field="min" data-kind="value">
-              ${formatSelectOptions([["50", "50% ke atas"], ["60", "60% ke atas"], ["70", "70% ke atas"], ["80", "80% ke atas"]], minimum)}
+              ${formatSelectOptions([["50", "50% ke atas"], ["60", "60% ke atas"], ["70", "70% ke atas"], ["80", "80% ke atas"]], state.filters.matches.min)}
             </select>
           </label>
-          <button class="button button-primary" type="button" data-action="run-matching">Jalankan pencocokan otomatis</button>
-          <button class="button button-secondary" type="button" data-action="manual-match">Pencocokan manual</button>
+          <button class="button button-primary" type="button" data-action="run-matching">Cari pasangan otomatis</button>
+          <button class="button button-secondary" type="button" data-action="manual-match">Cocokkan sendiri</button>
         </div>
       </div>
+      ${helperNote("Klik <b>Cocokkan</b> kalau dua laporan ini memang barang yang sama. Pemiliknya akan dapat pemberitahuan.")}
       <div id="view-region"></div>`;
   },
   region() {
-    if (atLeast(state.role, "moderator") === false) {
-      return emptyMarkup("Akses terbatas", "Fitur pencocokan tersedia untuk moderator ke atas.");
+    if (!atLeast(state.role, "moderator")) {
+      return emptyMarkup("Belum bisa dibuka", "Menu ini untuk moderator ke atas.");
     }
     const suggestions = computeSuggestions();
     const saved = state.data.matches.slice(0, 40);
 
     return `
-      <h2 class="section-title">Rekomendasi otomatis <span class="list-heading"></span></h2>
-      <p class="helper-note">Ditemukan ${suggestions.length} pasangan dengan kemiripan di atas ${escapeHtml(state.filters.matches.min)}%. Konfirmasi pasangan yang benar agar laporan ditandai cocok dan pemilik menerima notifikasi.</p>
+      <h2 class="section-title">Saran dari sistem</h2>
       ${suggestions.length ? `<div class="record-list">${suggestions.map(matchCard).join("")}</div>`
-        : emptyMarkup("Belum ada rekomendasi", "Tambahkan laporan hilang dan barang temuan, lalu jalankan pencocokan otomatis.")}
+        : emptyMarkup("Belum ada saran baru", "Klik tombol “Cari pasangan otomatis” kalau ada barang hilang dan barang temuan baru.")}
 
-      <h2 class="section-title">Riwayat pencocokan</h2>
+      <h2 class="section-title">Sudah pernah dicocokkan</h2>
       ${saved.length ? `<div class="record-list">${saved.map(savedMatchCard).join("")}</div>`
-        : emptyMarkup("Belum ada pencocokan tersimpan", "Pasangan yang Anda konfirmasi atau abaikan akan tercatat di sini.")}`;
+        : emptyMarkup("Belum ada riwayat pencocokan", "Pasangan yang kamu cocokkan atau lewati akan muncul di sini.")}`;
   }
 };
 
@@ -1234,15 +1266,18 @@ function similarityScore(found, lost) {
   let score = 0;
   let weight = 0;
 
-  const nameScore = Math.max(tokenSimilarity(found.name, lost.name), tokenSimilarity(`${found.description} ${found.distinctive_features}`, `${lost.description} ${lost.distinctive_features}`));
+  const nameScore = Math.max(
+    tokenSimilarity(found.name, lost.name),
+    tokenSimilarity(`${found.description} ${found.distinctive_features}`, `${lost.description} ${lost.distinctive_features}`)
+  );
   score += nameScore * 30;
   weight += 30;
-  if (nameScore >= 0.5) reasons.push("Nama/deskripsi mirip");
+  if (nameScore >= 0.5) reasons.push("nama/deskripsi mirip");
 
   if (found.category && lost.category) {
     if (found.category === lost.category) {
       score += 20;
-      reasons.push("Kategori sama");
+      reasons.push("kategori sama");
     }
     weight += 20;
   } else {
@@ -1255,7 +1290,7 @@ function similarityScore(found, lost) {
   if (foundColor && lostColor) {
     if (foundColor === lostColor || foundColor.includes(lostColor) || lostColor.includes(foundColor)) {
       score += 15;
-      reasons.push("Warna sama");
+      reasons.push("warna sama");
     }
     weight += 15;
   } else {
@@ -1266,7 +1301,7 @@ function similarityScore(found, lost) {
   const locationScore = tokenSimilarity(found.location_found, lost.last_seen_location);
   if (found.location_found && lost.last_seen_location) {
     score += locationScore * 20;
-    if (locationScore >= 0.5) reasons.push("Lokasi berdekatan");
+    if (locationScore >= 0.5) reasons.push("lokasi berdekatan");
   } else {
     score += 10;
   }
@@ -1277,13 +1312,13 @@ function similarityScore(found, lost) {
     score += 8;
   } else if (days <= 1) {
     score += 15;
-    reasons.push("Selisih waktu ≤ 1 hari");
+    reasons.push("waktunya dekat (≤ 1 hari)");
   } else if (days <= 3) {
     score += 12;
-    reasons.push(`Selisih ${Math.round(days)} hari`);
+    reasons.push(`selisih ${Math.round(days)} hari`);
   } else if (days <= 7) {
     score += 8;
-    reasons.push(`Selisih ${Math.round(days)} hari`);
+    reasons.push(`selisih ${Math.round(days)} hari`);
   } else if (days <= 14) {
     score += 4;
   }
@@ -1323,26 +1358,26 @@ function matchCard(entry) {
     <div class="record-main">
       <div class="match-pair">
         <div class="match-side">
-          <h4>Hilang · ${escapeHtml(entry.lost.name || "Tanpa nama")}</h4>
-          <p>${escapeHtml(entry.lost.category || "Tanpa kategori")} · ${escapeHtml(entry.lost.last_seen_location || "Lokasi belum dicatat")} · ${escapeHtml(formatDate(entry.lost.lost_at || entry.lost.created_at))}</p>
+          <h4>🔍 Yang hilang: ${escapeHtml(entry.lost.name || "Tanpa nama")}</h4>
+          <p>${escapeHtml(entry.lost.category || "Tanpa kategori")} · ${escapeHtml(entry.lost.last_seen_location || "lokasi belum diisi")} · ${escapeHtml(formatDate(entry.lost.lost_at || entry.lost.created_at))}</p>
         </div>
         <div class="match-arrow" aria-hidden="true">↔</div>
         <div class="match-side">
-          <h4>Temuan · ${escapeHtml(entry.found.name || "Tanpa nama")}</h4>
-          <p>${escapeHtml(entry.found.category || "Tanpa kategori")} · ${escapeHtml(entry.found.location_found || "Lokasi belum dicatat")} · ${escapeHtml(formatDate(entry.found.found_at || entry.found.created_at))}</p>
+          <h4>🎒 Yang ditemukan: ${escapeHtml(entry.found.name || "Tanpa nama")}</h4>
+          <p>${escapeHtml(entry.found.category || "Tanpa kategori")} · ${escapeHtml(entry.found.location_found || "lokasi belum diisi")} · ${escapeHtml(formatDate(entry.found.found_at || entry.found.created_at))}</p>
         </div>
       </div>
       <div class="match-reasons">
-        <span class="score-badge ${scoreClass(entry.score)}">Kemiripan ${entry.score}%</span>
+        <span class="score-badge ${scoreClass(entry.score)}">Mirip ${entry.score}%</span>
         ${entry.reasons.map((reason) => `<span class="reason">${escapeHtml(reason)}</span>`).join("")}
       </div>
     </div>
     ${canValidate ? `<div class="record-actions">
       <button class="button button-primary button-small" type="button" data-action="confirm-suggestion"
-        data-found="${escapeAttribute(entry.found.id)}" data-lost="${escapeAttribute(entry.lost.id)}" data-score="${entry.score}">Konfirmasi</button>
+        data-found="${escapeAttribute(entry.found.id)}" data-lost="${escapeAttribute(entry.lost.id)}" data-score="${entry.score}">Cocokkan</button>
       <button class="button button-secondary button-small" type="button" data-action="dismiss-suggestion"
-        data-found="${escapeAttribute(entry.found.id)}" data-lost="${escapeAttribute(entry.lost.id)}" data-score="${entry.score}">Abaikan</button>
-      <button class="button button-quiet button-small" type="button" data-action="go-view" data-view="lost">Buka laporan hilang</button>
+        data-found="${escapeAttribute(entry.found.id)}" data-lost="${escapeAttribute(entry.lost.id)}" data-score="${entry.score}">Bukan pasangan</button>
+      <button class="button button-quiet button-small" type="button" data-action="go-view" data-view="lost">Lihat laporan hilang</button>
     </div>` : ""}
   </article>`;
 }
@@ -1356,44 +1391,45 @@ function savedMatchCard(row) {
     <div class="record-main">
       <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(lost ? lost.name : "Laporan hilang")} ↔ ${escapeHtml(found ? found.name : "Barang temuan")}</h3></div>
       <div class="record-meta">
-        <span class="score-badge ${scoreClass(row.score)}">Kemiripan ${row.score}%</span>
-        <span>${row.method === "manual" ? "Pencocokan manual" : "Pencocokan otomatis"}</span>
+        <span class="score-badge ${scoreClass(row.score)}">Mirip ${row.score}%</span>
+        <span>${row.method === "manual" ? "Dicocokkan manual" : "Dari saran sistem"}</span>
         <span>Dibuat ${escapeHtml(formatDate(row.created_at))}</span>
-        ${reviewer ? `<span>Ditinjau: ${escapeHtml(reviewer.full_name || reviewer.email)}</span>` : ""}
+        ${reviewer ? `<span>Diperiksa oleh ${escapeHtml(reviewer.full_name || reviewer.email)}</span>` : ""}
       </div>
     </div>
     ${canValidate && row.status === "suggested" ? `<div class="record-actions">
-      <button class="button button-primary button-small" type="button" data-action="confirm-match" data-id="${row.id}">Konfirmasi</button>
-      <button class="button button-secondary button-small" type="button" data-action="dismiss-match" data-id="${row.id}">Abaikan</button>
+      <button class="button button-primary button-small" type="button" data-action="confirm-match" data-id="${row.id}">Cocokkan</button>
+      <button class="button button-secondary button-small" type="button" data-action="dismiss-match" data-id="${row.id}">Bukan pasangan</button>
     </div>` : ""}
   </article>`;
-}
+};
 
 VIEWS.claims = {
   shell() {
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Klaim &amp; serah terima</p>
-          <h1>Verifikasi kepemilikan</h1>
-          <p>Periksa bukti kepemilikan, catat berita acara serah terima, dan ikuti alur status laporan.</p>
+          <p class="section-kicker">Klaim &amp; pengambilan</p>
+          <h1>Klaim &amp; Pengambilan Barang</h1>
+          <p>Di sini kamu memeriksa bukti kepemilikan, lalu mencatat saat barang diserahkan ke pemiliknya.</p>
         </div>
       </div>
+      ${helperNote("Langkahnya: periksa bukti → <b>Setujui</b> → <b>Serah terima barang</b> saat barang sudah diambil.")}
       <div class="panel-filters three">
         <div class="filter-control">
-          <label for="filter-search">Cari pemohon / barang</label>
+          <label for="filter-search">Cari pemohon atau barang</label>
           <input id="filter-search" type="search" autocomplete="off" data-scope="claims" data-field="search" data-kind="text"
-            placeholder="Nama, email, nama barang…" value="${escapeAttribute(state.filters.claims.search)}">
+            placeholder="Tulis nama, email, atau nama barang…" value="${escapeAttribute(state.filters.claims.search)}">
         </div>
         <div class="filter-control">
           <label for="filter-status">Status klaim</label>
           <select id="filter-status" data-scope="claims" data-field="status" data-kind="value">
             <option value="all">Semua status</option>
-            ${formatSelectOptions([["pending", "Menunggu"], ["approved", "Disetujui"], ["rejected", "Ditolak"], ["completed", "Selesai"]], state.filters.claims.status)}
+            ${formatSelectOptions([["pending", "Menunggu diperiksa"], ["approved", "Sudah disetujui"], ["rejected", "Ditolak"], ["completed", "Sudah diambil"]], state.filters.claims.status)}
           </select>
         </div>
         <div class="filter-control" style="align-content:end">
-          <button class="button button-quiet button-small" type="button" data-action="reset-filters" data-scope="claims">Reset filter</button>
+          <button class="button button-quiet button-small" type="button" data-action="reset-filters" data-scope="claims">Hapus filter</button>
         </div>
       </div>
       <div id="view-region"></div>`;
@@ -1411,27 +1447,28 @@ VIEWS.claims = {
       return haystack.includes(query);
     }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-    if (!rows.length) return emptyMarkup("Belum ada pengajuan klaim", "Klaim dari pengguna akan tampil di halaman ini.");
+    if (!rows.length) return emptyMarkup("Belum ada klaim", "Kalau ada siswa yang mengaku pemilik barang, klaimnya muncul di sini.");
 
-    return `<div class="list-heading"><h2>Pengajuan klaim</h2><span>${rows.length} klaim</span></div>
+    return `<div class="list-heading"><h2>Daftar klaim</h2><span>${rows.length} klaim</span></div>
       <div class="record-list">${rows.map(claimCard).join("")}</div>
 
-      <h2 class="section-title">Log status barang</h2>
+      <h2 class="section-title">Riwayat status barang</h2>
       ${state.data.history.length ? `<div class="table-wrap"><table class="data-table">
-        <thead><tr><th>Waktu</th><th>Barang</th><th>Perubahan status</th><th>Oleh</th></tr></thead>
-        <tbody>${state.data.history.slice(0, 25).map((row) => {
+        <thead><tr><th>Waktu</th><th>Barang</th><th>Perubahan</th><th>Oleh</th></tr></thead>
+        <tbody>${state.data.history.slice(0, 20).map((row) => {
           const item = row.item_type === "found" ? state.maps.found[row.item_id] : row.item_type === "lost" ? state.maps.lost[row.item_id] : null;
-          const claimItem = row.item_type === "claim" ? state.maps.found[(state.maps.claims[row.item_id] || {}).found_item_id] : null;
+          const claim = row.item_type === "claim" ? state.maps.claims[row.item_id] : null;
+          const claimItem = claim ? state.maps.found[claim.found_item_id] : null;
           const label = item ? item.name : claimItem ? `Klaim · ${claimItem.name}` : "Laporan";
           const actor = state.maps.profiles[row.changed_by];
           return `<tr>
             <td>${escapeHtml(formatDate(row.created_at))}</td>
             <td class="cell-name">${escapeHtml(label || "Laporan")}</td>
-            <td>${escapeHtml(STATUS_LABELS[row.previous_status] || row.previous_status || "—")} → ${escapeHtml(STATUS_LABELS[row.new_status] || row.new_status)}</td>
+            <td>${escapeHtml(STATUS_LABELS[row.previous_status] || row.previous_status || "dibuat")} → ${escapeHtml(STATUS_LABELS[row.new_status] || row.new_status)}</td>
             <td>${escapeHtml(actor ? (actor.full_name || actor.email) : "Sistem")}</td>
           </tr>`;
         }).join("")}</tbody>
-      </table></div>` : emptyMarkup("Belum ada riwayat status", "Riwayat tercatat otomatis saat status laporan berubah.")}`;
+      </table></div>` : emptyMarkup("Belum ada riwayat", "Riwayat muncul setelah status barang berubah.")}`;
   }
 };
 
@@ -1451,23 +1488,22 @@ function claimCard(row) {
     actions.push(actionButton("Serah terima barang", "claim-handover", row.id, "", "button-primary"));
     actions.push(actionButton("Tolak", "claim-reject", row.id, "", "button-danger"));
   }
-  if (item) actions.push(actionButton("Buka barang", "open-item", item.id));
   if (row.evidence_path) actions.push(actionButton("Lihat bukti", "claim-evidence", row.id));
   if (atLeast(state.role, "admin")) actions.push(actionButton("Hapus klaim", "delete-record", row.id, ' data-meta="claims"', "button-danger"));
 
   return `<article class="record">
     <div class="record-main">
-      <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(item ? item.name : "Barang tidak tersedia")}</h3></div>
+      <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(item ? item.name : "Barang tidak ditemukan")}</h3></div>
       <div class="record-meta">
-        <span>Pemohon: ${escapeHtml(claimant ? (claimant.full_name || claimant.email) : "Akun tidak tersedia")}</span>
-        <span>${escapeHtml(claimant ? claimant.email : "")}</span>
-        <span>Diajukan ${escapeHtml(formatDate(row.created_at))}</span>
-        ${reviewer ? `<span>Diverifikasi: ${escapeHtml(reviewer.full_name || reviewer.email)}</span>` : ""}
+        <span><b>Yang mengaku:</b> ${escapeHtml(claimant ? (claimant.full_name || claimant.email) : "akun tidak ditemukan")}</span>
+        ${claimant ? `<span>${escapeHtml(claimant.email)}</span>` : ""}
+        <span><b>Diajukan:</b> ${escapeHtml(formatDate(row.created_at))}</span>
+        ${reviewer ? `<span><b>Diperiksa oleh:</b> ${escapeHtml(reviewer.full_name || reviewer.email)}</span>` : ""}
       </div>
-      ${row.proof_description ? `<p class="record-proof">${escapeHtml(row.proof_description)}</p>` : ""}
-      ${row.review_note ? `<p class="record-text"><strong>Catatan verifikasi:</strong> ${escapeHtml(row.review_note)}</p>` : ""}
-      ${handover ? `<p class="record-text"><strong>Serah terima:</strong> ${escapeHtml(handover.receiver_name)} · ${escapeHtml(formatDate(handover.created_at))}${handover.signature_path ? " · berita acara terlampir" : ""}</p>` : ""}
-      ${item ? `<div class="record-meta"><span>Status barang saat ini: ${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span><span>Penyimpanan: ${escapeHtml(item.storage_location || "Belum dicatat")}</span></div>` : ""}
+      ${row.proof_description ? `<p class="record-proof"><strong>Bukti yang dikirim pemohon:</strong> ${escapeHtml(row.proof_description)}</p>` : ""}
+      ${row.review_note ? `<p class="record-text"><strong>Catatan pemeriksaan:</strong> ${escapeHtml(row.review_note)}</p>` : ""}
+      ${handover ? `<p class="record-text"><strong>Sudah diambil oleh:</strong> ${escapeHtml(handover.receiver_name)} pada ${escapeHtml(formatDate(handover.created_at))}${handover.signature_path ? " · berita acara terlampir" : ""}</p>` : ""}
+      ${item ? `<div class="record-meta"><span><b>Status barang sekarang:</b> ${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span><span><b>Disimpan di:</b> ${escapeHtml(item.storage_location || "belum dicatat")}</span></div>` : ""}
     </div>
     ${actions.length ? `<div class="record-actions">${actions.join("")}</div>` : ""}
   </article>`;
@@ -1478,28 +1514,29 @@ VIEWS.users = {
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Manajemen pengguna</p>
-          <h1>Pengguna &amp; hak akses</h1>
-          <p>Atur role petugas, blokir akun palsu, dan tinjau keaktifan pengguna.</p>
+          <p class="section-kicker">Pengguna</p>
+          <h1>Daftar Pengguna</h1>
+          <p>Atur jabatan petugas, blokir akun yang bikin masalah, dan lihat keaktifan mereka.</p>
         </div>
       </div>
+      ${helperNote("Blokir dipakai kalau ada akun yang mengirim laporan palsu. Akun yang diblokir tidak bisa melapor lagi.")}
       <div class="panel-filters three">
         <div class="filter-control">
           <label for="filter-search">Cari pengguna</label>
           <input id="filter-search" type="search" autocomplete="off" data-scope="users" data-field="search" data-kind="text"
-            placeholder="Nama atau email…" value="${escapeAttribute(state.filters.users.search)}">
+            placeholder="Tulis nama atau email…" value="${escapeAttribute(state.filters.users.search)}">
         </div>
         <div class="filter-control">
-          <label for="filter-role">Role</label>
+          <label for="filter-role">Jabatan</label>
           <select id="filter-role" data-scope="users" data-field="role" data-kind="value">
-            <option value="all">Semua role</option>
+            <option value="all">Semua jabatan</option>
             ${formatSelectOptions(Object.entries(ROLE_LABELS), state.filters.users.role)}
           </select>
         </div>
         <div class="filter-control">
-          <label for="filter-status">Status akun</label>
+          <label for="filter-status">Kondisi akun</label>
           <select id="filter-status" data-scope="users" data-field="status" data-kind="value">
-            <option value="all">Semua status</option>
+            <option value="all">Semua kondisi</option>
             ${formatSelectOptions([["active", "Aktif"], ["blocked", "Diblokir"]], state.filters.users.status)}
           </select>
         </div>
@@ -1517,11 +1554,11 @@ VIEWS.users = {
       return [row.full_name, row.email].filter(Boolean).join(" ").toLowerCase().includes(query);
     });
 
-    if (!rows.length) return emptyMarkup("Tidak ada pengguna yang cocok", "Ubah filter pencarian.");
+    if (!rows.length) return emptyMarkup("Tidak ada pengguna yang cocok", "Coba ubah filternya.");
 
     const canManage = atLeast(state.role, "admin");
     return `<div class="table-wrap"><table class="data-table">
-      <thead><tr><th>Pengguna</th><th>Role</th><th>Status</th><th>Laporan</th><th>Aktivitas</th><th></th></tr></thead>
+      <thead><tr><th>Pengguna</th><th>Jabatan</th><th>Kondisi</th><th>Laporan</th><th>Terakhir aktif</th><th></th></tr></thead>
       <tbody>${rows.map((row) => {
         const isSelf = row.id === state.user.id;
         const privileged = PANEL_EMAILS.includes(String(row.email || "").toLowerCase());
@@ -1534,13 +1571,13 @@ VIEWS.users = {
             ? actionButton("Buka blokir", "unblock-user", row.id)
             : actionButton("Blokir", "block-user", row.id, "", "button-danger"));
         }
-        if (canManage) actions.push(actionButton("Notifikasi", "notify-user", row.id));
-        actions.push(actionButton("Riwayat", "user-history", row.id));
+        if (canManage) actions.push(actionButton("Kirim pesan", "notify-user", row.id));
+        actions.push(actionButton("Lihat riwayat", "user-history", row.id));
         return `<tr>
           <td>
-            <span class="cell-name">${escapeHtml(row.full_name || "(tanpa nama)")}${isSelf ? " · Anda" : ""}</span><br>
+            <span class="cell-name">${escapeHtml(row.full_name || "(tanpa nama)")}${isSelf ? " · kamu" : ""}</span><br>
             <span style="color:var(--muted);font-size:11.5px">${escapeHtml(row.email || "")}</span>
-            ${row.blocked && row.blocked_reason ? `<br><span style="color:var(--danger);font-size:11.5px">Alasan blokir: ${escapeHtml(row.blocked_reason)}</span>` : ""}
+            ${row.blocked && row.blocked_reason ? `<br><span style="color:var(--danger);font-size:11.5px">Alasan diblokir: ${escapeHtml(row.blocked_reason)}</span>` : ""}
           </td>
           <td>${canManage && !isSelf && !privileged
             ? `<select class="inline-select" data-action="change-role" data-id="${escapeAttribute(row.id)}">
@@ -1563,30 +1600,30 @@ VIEWS.announcements = {
       <div class="page-heading">
         <div>
           <p class="section-kicker">Pengumuman</p>
-          <h1>Pengumuman pengguna</h1>
-          <p>Kirim pengumuman yang langsung tampil di halaman utama pengguna.</p>
+          <h1>Pengumuman untuk Pengguna</h1>
+          <p>Tulis pengumuman, lalu tekan Terbitkan supaya langsung muncul di halaman siswa.</p>
         </div>
         <button class="button button-primary" type="button" data-action="new-announcement">Buat pengumuman</button>
       </div>
+      ${helperNote("Contoh isi pengumuman: “Barang temuan yang tidak diambil dalam 30 hari akan diserahkan ke sekolah.”")}
       <div id="view-region"></div>`;
   },
   region() {
     const rows = state.data.announcements.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    if (!rows.length) return emptyMarkup("Belum ada pengumuman", "Buat pengumuman pertama untuk ditampilkan di halaman pengguna.");
+    if (!rows.length) return emptyMarkup("Belum ada pengumuman", "Tekan tombol “Buat pengumuman” untuk membuat yang pertama.");
     return `<div class="record-list">${rows.map((row) => {
       const author = state.maps.profiles[row.created_by];
       const active = row.is_published && (!row.expires_at || new Date(row.expires_at) > new Date());
       return `<article class="record">
         <div class="record-main">
           <div class="record-title">
-            <span class="status-badge ${active ? "status-available" : "status-archived"}">${active ? "Tayang" : row.is_published ? "Kedaluwarsa" : "Draf"}</span>
+            <span class="status-badge ${active ? "status-available" : "status-archived"}">${active ? "Tampil di halaman siswa" : row.is_published ? "Sudah terlalu lama" : "Belum ditampilkan"}</span>
             <h3>${escapeHtml(row.title || "Tanpa judul")}</h3>
             <span class="reason">${escapeHtml(LEVEL_LABELS[row.level] || row.level)}</span>
           </div>
           <div class="record-meta">
             <span>Dibuat ${escapeHtml(formatDate(row.created_at))}</span>
-            ${row.published_at ? `<span>Terbit ${escapeHtml(formatDate(row.published_at))}</span>` : ""}
-            ${row.expires_at ? `<span>Berakhir ${escapeHtml(formatDate(row.expires_at))}</span>` : ""}
+            ${row.expires_at ? `<span>Selesai pada ${escapeHtml(formatDate(row.expires_at))}</span>` : ""}
             ${author ? `<span>Oleh ${escapeHtml(author.full_name || author.email)}</span>` : ""}
           </div>
           ${row.body ? `<p class="record-text">${escapeHtml(row.body)}</p>` : ""}
@@ -1594,7 +1631,7 @@ VIEWS.announcements = {
         <div class="record-actions">
           <button class="button ${row.is_published ? "button-secondary" : "button-primary"} button-small" type="button"
             data-action="toggle-announcement" data-id="${escapeAttribute(row.id)}" data-published="${row.is_published ? "false" : "true"}">
-            ${row.is_published ? "Tarik dari halaman pengguna" : "Terbitkan"}
+            ${row.is_published ? "Sembunyikan" : "Terbitkan"}
           </button>
           <button class="button button-secondary button-small" type="button" data-action="edit-announcement" data-id="${escapeAttribute(row.id)}">Edit</button>
           <button class="button button-danger button-small" type="button" data-action="delete-record" data-id="${escapeAttribute(row.id)}" data-meta="announcements">Hapus</button>
@@ -1609,13 +1646,13 @@ VIEWS.communication = {
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Komunikasi</p>
-          <h1>Notifikasi &amp; tiket moderasi</h1>
-          <p>Kirim pemberitahuan ke pengguna dan catat penanganan tiket percakapan atau laporan konten.</p>
+          <p class="section-kicker">Pesan &amp; masalah</p>
+          <h1>Pesan &amp; Masalah</h1>
+          <p>Kirim pesan ke pengguna dan catat masalah yang perlu ditangani.</p>
         </div>
         <div class="form-actions" style="margin:0;padding:0;border:0">
-          <button class="button button-primary" type="button" data-action="new-notification">Kirim notifikasi</button>
-          <button class="button button-secondary" type="button" data-action="new-ticket">Tambah tiket</button>
+          <button class="button button-primary" type="button" data-action="new-notification">Kirim pesan</button>
+          <button class="button button-secondary" type="button" data-action="new-ticket">Catat masalah</button>
         </div>
       </div>
       <div id="view-region"></div>`;
@@ -1627,20 +1664,20 @@ VIEWS.communication = {
 
     return `
       <section class="card">
-        <h2>Tiket moderasi <span>percakapan, konten, dan indikasi penipuan</span></h2>
+        <h2>Masalah yang dicatat</h2>
         <div class="filter-control" style="max-width:280px;margin-bottom:12px">
-          <label for="filter-status">Status tiket</label>
+          <label for="filter-status">Status masalah</label>
           <select id="filter-status" data-scope="communication" data-field="status" data-kind="value">
             <option value="all">Semua status</option>
             ${formatSelectOptions(TICKET_STATUSES.map((value) => [value, STATUS_LABELS[value] || value]), filter.status)}
           </select>
         </div>
         ${tickets.length ? `<div class="record-list">${tickets.map(ticketCard).join("")}</div>`
-          : emptyMarkup("Belum ada tiket", "Tiket moderasi membantu mencatat tindak lanjut percakapan antar-pengguna.")}
+          : emptyMarkup("Belum ada masalah dicatat", "Pakai tombol “Catat masalah” kalau ada kejadian yang perlu ditindak.")}
       </section>
 
       <section class="card" style="margin-top:14px">
-        <h2>Notifikasi terakhir <span>12 pengiriman terbaru</span></h2>
+        <h2>Pesan yang baru dikirim</h2>
         ${notifications.length ? `<div class="table-wrap"><table class="data-table">
           <thead><tr><th>Waktu</th><th>Penerima</th><th>Judul</th><th>Jenis</th></tr></thead>
           <tbody>${notifications.map((row) => {
@@ -1652,7 +1689,7 @@ VIEWS.communication = {
               <td>${escapeHtml(row.kind || "sistem")}</td>
             </tr>`;
           }).join("")}</tbody>
-        </table></div>` : emptyMarkup("Belum ada notifikasi", "Notifikasi otomatis tercatat saat klaim dan pencocokan diproses.")}
+        </table></div>` : emptyMarkup("Belum ada pesan", "Pesan otomatis tercatat saat klaim dan pencocokan diproses.")}
       </section>`;
   }
 };
@@ -1664,10 +1701,10 @@ function ticketCard(row) {
     .map((status) => actionButton(STATUS_LABELS[status] || status, "ticket-status", row.id, ` data-status="${status}"`));
   return `<article class="record">
     <div class="record-main">
-      <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(row.category || "Tiket")}</h3></div>
+      <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(row.category || "Masalah")}</h3></div>
       <div class="record-meta">
-        <span>Pengguna: ${escapeHtml(subject ? (subject.full_name || subject.email) : "Tidak diketahui")}</span>
-        <span>Dibuka oleh: ${escapeHtml(opener ? (opener.full_name || opener.email) : "Sistem")}</span>
+        <span><b>Pengguna:</b> ${escapeHtml(subject ? (subject.full_name || subject.email) : "tidak diketahui")}</span>
+        <span>Dicatat oleh ${escapeHtml(opener ? (opener.full_name || opener.email) : "Sistem")}</span>
         <span>${escapeHtml(formatDate(row.created_at))}</span>
       </div>
       ${row.detail ? `<p class="record-text">${escapeHtml(row.detail)}</p>` : ""}
@@ -1675,7 +1712,7 @@ function ticketCard(row) {
     </div>
     <div class="record-actions">
       ${actions.join("")}
-      <button class="button button-secondary button-small" type="button" data-action="ticket-note" data-id="${escapeAttribute(row.id)}">Catat tindak lanjut</button>
+      <button class="button button-secondary button-small" type="button" data-action="ticket-note" data-id="${escapeAttribute(row.id)}">Tulis tindak lanjut</button>
     </div>
   </article>`;
 }
@@ -1686,19 +1723,17 @@ VIEWS.audit = {
     return `
       <div class="page-heading">
         <div>
-          <p class="section-kicker">Audit trail</p>
-          <h1>Log aktivitas pengelola</h1>
-          <p>Setiap perubahan status, penghapusan, dan keputusan klaim tercatat otomatis beserta pelakunya.</p>
+          <p class="section-kicker">Catatan aktivitas</p>
+          <h1>Catatan Aktivitas Pengelola</h1>
+          <p>Semua tindakan pengelola tercatat otomatis: siapa yang mengubah status atau menyetujui klaim.</p>
         </div>
-        <div class="form-actions" style="margin:0;padding:0;border:0">
-          <button class="button button-secondary" type="button" data-action="export" data-scope="audit">Ekspor CSV</button>
-        </div>
+        <button class="button button-secondary" type="button" data-action="export" data-scope="audit">Unduh catatan (Excel/CSV)</button>
       </div>
       <div class="panel-filters three">
         <div class="filter-control">
           <label for="filter-search">Cari aktivitas</label>
           <input id="filter-search" type="search" autocomplete="off" data-scope="audit" data-field="search" data-kind="text"
-            placeholder="Email pengelola, nama barang…" value="${escapeAttribute(state.filters.audit.search)}">
+            placeholder="Tulis email atau nama barang…" value="${escapeAttribute(state.filters.audit.search)}">
         </div>
         <div class="filter-control">
           <label for="filter-action">Jenis tindakan</label>
@@ -1708,7 +1743,7 @@ VIEWS.audit = {
           </select>
         </div>
         <div class="filter-control" style="align-content:end">
-          <button class="button button-quiet button-small" type="button" data-action="reset-filters" data-scope="audit">Reset filter</button>
+          <button class="button button-quiet button-small" type="button" data-action="reset-filters" data-scope="audit">Hapus filter</button>
         </div>
       </div>
       <div id="view-region"></div>`;
@@ -1723,7 +1758,7 @@ VIEWS.audit = {
         .filter(Boolean).join(" ").toLowerCase().includes(query);
     }).slice(0, 120);
 
-    if (!rows.length) return emptyMarkup("Belum ada catatan aktivitas", "Log akan terisi otomatis setelah ada tindakan pengelola.");
+    if (!rows.length) return emptyMarkup("Belum ada catatan", "Catatan terisi otomatis setelah ada tindakan pengelola.");
     return `<div class="table-wrap"><table class="data-table">
       <thead><tr><th>Waktu</th><th>Pengelola</th><th>Tindakan</th><th>Objek</th><th>Keterangan</th></tr></thead>
       <tbody>${rows.map((row) => `<tr>
@@ -1740,8 +1775,8 @@ VIEWS.audit = {
 function describeDetail(row) {
   const detail = row.detail || {};
   if (row.action === "ubah_status") return `${STATUS_LABELS[detail.dari] || detail.dari || "—"} → ${STATUS_LABELS[detail.ke] || detail.ke || "—"}`;
-  if (detail.judul) return `“${detail.judul}”${typeof detail.terbit === "boolean" ? (detail.terbit ? " · tayang" : " · draf") : ""}`;
-  if (detail.role) return `Role baru: ${ROLE_LABELS[detail.role] || detail.role}`;
+  if (detail.judul) return `“${detail.judul}”${typeof detail.terbit === "boolean" ? (detail.terbit ? " · tampil" : " · belum tampil") : ""}`;
+  if (detail.role) return `Jabatan baru: ${ROLE_LABELS[detail.role] || detail.role}`;
   if (detail.status) return `Status: ${STATUS_LABELS[detail.status] || detail.status}${detail.catatan ? ` · ${detail.catatan}` : ""}`;
   if (detail.penerima) return `Penerima: ${detail.penerima}`;
   if (detail.skor !== undefined) return `Kemiripan ${detail.skor}%`;
@@ -1751,66 +1786,55 @@ function describeDetail(row) {
 }
 
 async function updateStatus(table, id, status, successMessage) {
-  const payload = { status, updated_at: new Date().toISOString() };
-  const { error } = await state.client.from(table).update(payload).eq("id", id);
+  const { error } = await state.client.from(table).update({ status, updated_at: new Date().toISOString() }).eq("id", id);
   if (error) {
     setAlert(friendlyError(error), "error");
     return;
   }
   await refreshAll();
   renderView();
-  setAlert(successMessage || "Status berhasil diperbarui.", "success");
+  setAlert(successMessage || "Status berhasil diubah.", "success");
 }
 
 async function deleteRecord(meta, id) {
   const config = {
-    found: { table: "found_items", label: "barang temuan ini", bucket: "found-items" },
-    lost: { table: "lost_reports", label: "laporan kehilangan ini", bucket: "lost-reports" },
-    claims: { table: "claims", label: "pengajuan klaim ini" },
+    found: { table: "found_items", label: "barang temuan ini" },
+    lost: { table: "lost_reports", label: "laporan kehilangan ini" },
+    claims: { table: "claims", label: "klaim ini" },
     announcements: { table: "announcements", label: "pengumuman ini" }
   }[meta];
   if (!config) return;
 
   const approved = await confirmAction({
-    title: "Konfirmasi penghapusan",
-    message: `Hapus ${config.label}? Data dan foto terkait akan dihapus permanen dan tercatat di log audit.`,
-    confirmLabel: "Hapus permanen"
+    title: "Hapus data ini?",
+    message: `${config.label} akan dihapus permanen (tidak bisa dikembalikan) dan tercatat di catatan aktivitas.`,
+    confirmLabel: "Ya, hapus"
   });
   if (!approved) return;
 
   try {
-    if (config.bucket) {
+    if (meta === "found" || meta === "lost") {
       const source = meta === "found" ? state.maps.found[id] : state.maps.lost[id];
-      if (source && source.image_path) await removeStoredImage(config.bucket, source.image_path);
+      const bucket = meta === "found" ? "found-items" : "lost-reports";
+      if (source && source.image_path) await removeStoredImage(bucket, source.image_path);
     }
     const { error } = await state.client.from(config.table).delete().eq("id", id);
     if (error) throw error;
     await refreshAll();
     renderView();
-    setAlert("Data berhasil dihapus dan tercatat pada log audit.", "success");
+    setAlert("Data sudah dihapus.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
 }
 
-function pickImageFile() {
-  return new Promise((resolve) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/jpeg,image/png,image/webp";
-    input.addEventListener("change", () => resolve(input.files && input.files[0] ? input.files[0] : null), { once: true });
-    input.addEventListener("cancel", () => resolve(null), { once: true });
-    input.click();
-  });
-}
-
-async function changeItemImage(meta, id) {
+async function changeItemImage(meta, id, file) {
   const config = { found: { table: "found_items", bucket: "found-items" }, lost: { table: "lost_reports", bucket: "lost-reports" } }[meta];
   if (!config) return;
   const source = meta === "found" ? state.maps.found[id] : state.maps.lost[id];
-  const file = await pickImageFile();
-  if (!file) return;
-
+  const key = imageUploadKey(meta, id);
+  state.uploadingKey = key;
+  renderView();
   try {
     const path = await uploadImage(file, config.bucket);
     const { error } = await state.client.from(config.table).update({ image_path: path, updated_at: new Date().toISOString() }).eq("id", id);
@@ -1819,10 +1843,13 @@ async function changeItemImage(meta, id) {
       throw error;
     }
     if (source && source.image_path) await removeStoredImage(config.bucket, source.image_path);
+    state.uploadingKey = "";
     await refreshAll();
     renderView();
-    setAlert("Foto barang berhasil diperbarui.", "success");
+    setAlert("Gambar berhasil diunggah.", "success");
   } catch (error) {
+    state.uploadingKey = "";
+    renderView();
     setAlert(friendlyError(error), "error");
   }
 }
@@ -1832,9 +1859,9 @@ async function deleteItemImage(meta, id) {
   if (!config) return;
   const source = meta === "found" ? state.maps.found[id] : state.maps.lost[id];
   const approved = await confirmAction({
-    title: "Hapus foto",
-    message: "Foto barang ini akan dihapus dari penyimpanan. Data laporan tetap tersimpan dan tindakan ini tercatat di log audit.",
-    confirmLabel: "Hapus foto"
+    title: "Hapus gambar ini?",
+    message: "Gambarnya akan dihapus, tapi data laporannya tetap ada. Tindakan ini tercatat di catatan aktivitas.",
+    confirmLabel: "Ya, hapus gambar"
   });
   if (!approved) return;
 
@@ -1844,7 +1871,7 @@ async function deleteItemImage(meta, id) {
     if (source && source.image_path) await removeStoredImage(config.bucket, source.image_path);
     await refreshAll();
     renderView();
-    setAlert("Foto barang dihapus.", "success");
+    setAlert("Gambar sudah dihapus.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -1853,7 +1880,7 @@ async function deleteItemImage(meta, id) {
 async function runMatching() {
   const suggestions = computeSuggestions();
   if (!suggestions.length) {
-    setAlert("Tidak ada pasangan baru yang melewati ambang kemiripan saat ini.", "info");
+    setAlert("Belum ada pasangan baru yang mirip saat ini. Coba turunkan kemiripan minimal jadi 50%.", "info");
     return;
   }
   try {
@@ -1867,7 +1894,7 @@ async function runMatching() {
     ));
     await refreshAll();
     renderView();
-    setAlert(`${suggestions.length} rekomendasi pencocokan disimpan dan menunggu validasi Anda.`, "success");
+    setAlert(`${suggestions.length} saran pencocokan sudah disimpan. Tinggal kamu nilai benar atau tidak.`, "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -1886,7 +1913,7 @@ async function confirmSuggestion(foundId, lostId, score) {
     if (confirmError) throw confirmError;
     await refreshAll();
     renderView();
-    setAlert("Pencocokan dikonfirmasi. Pemilik laporan kehilangan menerima notifikasi.", "success");
+    setAlert("Barang sudah dicocokkan. Pemiliknya menerima pemberitahuan.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -1905,7 +1932,7 @@ async function dismissSuggestion(foundId, lostId, score) {
     if (dismissError) throw dismissError;
     await refreshAll();
     renderView();
-    setAlert("Rekomendasi diabaikan dan tidak dimunculkan lagi.", "info");
+    setAlert("Saran dilewati, jadi tidak muncul lagi.", "info");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -1919,7 +1946,7 @@ async function reviewMatch(matchId, decision) {
     if (error) throw error;
     await refreshAll();
     renderView();
-    setAlert(decision === "confirm" ? "Pencocokan dikonfirmasi." : "Pencocokan diabaikan.", "success");
+    setAlert(decision === "confirm" ? "Barang sudah dicocokkan." : "Saran sudah dilewati.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -1936,11 +1963,11 @@ async function reviewClaim(claimId, status, note) {
     await refreshAll();
     renderView();
     const messages = {
-      approved: "Klaim disetujui. Barang ditandai sudah diklaim dan pemohon menerima notifikasi.",
-      rejected: "Klaim ditolak dan status barang dikembalikan menjadi tersedia.",
-      completed: "Barang ditandai sudah diserahkan."
+      approved: "Klaim disetujui. Barang ditandai “ada yang mengaku” dan pemohon menerima pemberitahuan.",
+      rejected: "Klaim ditolak. Barang kembali berstatus “ada di pos”.",
+      completed: "Barang ditandai sudah diambil."
     };
-    setAlert(messages[status] || "Klaim diperbarui.", "success");
+    setAlert(messages[status] || "Klaim sudah diperbarui.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -1963,7 +1990,7 @@ async function recordHandover(claimId, receiverName, note, signatureFile) {
     closeModal();
     await refreshAll();
     renderView();
-    setAlert("Berita acara serah terima tercatat. Barang ditandai selesai.", "success");
+    setAlert("Serah terima tercatat. Barang ditandai sudah diambil.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -2006,28 +2033,70 @@ function confirmAction({ title, message, confirmLabel = "Lanjutkan", danger = tr
         </div>
       </div>`, { narrow: true, title });
 
-    const buttons = elements.dialogRoot.querySelectorAll("[data-confirm]");
-    buttons.forEach((button) => button.addEventListener("click", () => {
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
       closeModal();
-      resolve(button.dataset.confirm === "true");
-    }, { once: true }));
+      resolve(value);
+    };
+    elements.dialogRoot.querySelectorAll("[data-confirm]").forEach((button) => {
+      button.addEventListener("click", () => finish(button.dataset.confirm === "true"), { once: true });
+    });
     const backdrop = elements.dialogRoot.querySelector("[data-action='modal-backdrop']");
     if (backdrop) {
       backdrop.addEventListener("click", (event) => {
-        if (event.target === backdrop) {
-          closeModal();
-          resolve(false);
-        }
+        if (event.target === backdrop) finish(false);
       });
     }
   });
 }
 
+function promptModal({ title, message, field, required = true, confirmLabel = "Simpan", danger = true }) {
+  return new Promise((resolve) => {
+    openModal(`
+      ${modalHeader(title)}
+      <div class="panel-modal-content">
+        <p class="notice">${escapeHtml(message)}</p>
+        <form id="panel-prompt">
+          <label class="field" for="prompt-value"><span>${escapeHtml(field)}</span>
+            <input id="prompt-value" name="value" type="text" maxlength="400"${required ? " required" : ""}></label>
+          <div class="form-actions">
+            <button class="button ${danger ? "button-danger" : "button-primary"}" type="submit">${escapeHtml(confirmLabel)}</button>
+            <button class="button button-secondary" type="button" data-prompt-cancel="true">Batal</button>
+          </div>
+        </form>
+      </div>`, { narrow: true, title });
+
+    const form = document.getElementById("panel-prompt");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const value = String(new FormData(form).get("value") || "").trim();
+      closeModal();
+      resolve(value);
+    });
+    const cancel = elements.dialogRoot.querySelector("[data-prompt-cancel]");
+    if (cancel) cancel.addEventListener("click", () => {
+      closeModal();
+      resolve(null);
+    }, { once: true });
+  });
+}
+
+function imageField(label, hint) {
+  return `<label class="field field-full" for="edit-image"><span>${escapeHtml(label)} <span class="field-hint">(opsional)</span></span>
+    <input id="edit-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+    <span class="field-hint">${escapeHtml(hint)}</span></label>`;
+}
+
 function openFoundEditor(id) {
   const item = state.maps.found[id];
   if (!item) return;
+  const currentImage = item.imageUrl
+    ? `<div class="photo-frame">${renderImage(item.imageUrl, "Gambar barang", "")}</div>`
+    : `<div class="photo-frame is-empty"><div class="photo-placeholder">Belum ada gambar</div></div>`;
   openModal(`
-    ${modalHeader("Edit barang temuan", "Perbarui data barang yang tampil di halaman pengguna.")}
+    ${modalHeader("Edit barang temuan", "Ubah data barang yang tampil di halaman siswa.")}
     <div class="panel-modal-content">
       <form id="panel-edit-found" data-id="${escapeAttribute(item.id)}">
         <div class="form-grid">
@@ -2042,24 +2111,23 @@ function openFoundEditor(id) {
             <textarea id="edit-description" name="description" required minlength="5" maxlength="2000">${escapeHtml(item.description || "")}</textarea></label>
           <label class="field field-full" for="edit-features"><span>Ciri khusus</span>
             <textarea id="edit-features" name="distinctive_features" maxlength="1500">${escapeHtml(item.distinctive_features || "")}</textarea></label>
-          <label class="field" for="edit-location"><span>Lokasi ditemukan</span>
+          <label class="field" for="edit-location"><span>Ditemukan di</span>
             <input id="edit-location" name="location_found" type="text" maxlength="180" required value="${escapeAttribute(item.location_found || "")}"></label>
-          <label class="field" for="edit-storage"><span>Lokasi penyimpanan</span>
+          <label class="field" for="edit-storage"><span>Disimpan di</span>
             <input id="edit-storage" name="storage_location" type="text" maxlength="180" value="${escapeAttribute(item.storage_location || "")}"></label>
           <label class="field" for="edit-color"><span>Warna dominan</span>
             <input id="edit-color" name="color" type="text" maxlength="40" value="${escapeAttribute(item.color || "")}"></label>
-          <label class="field" for="edit-date"><span>Tanggal / waktu ditemukan</span>
+          <label class="field" for="edit-date"><span>Tanggal ditemukan</span>
             <input id="edit-date" name="found_at" type="datetime-local" required value="${escapeAttribute(toLocalInput(item.found_at))}"></label>
-          <label class="field field-full" for="edit-additional"><span>Informasi tambahan</span>
+          <label class="field field-full" for="edit-additional"><span>Info tambahan</span>
             <textarea id="edit-additional" name="additional_info" maxlength="1500">${escapeHtml(item.additional_info || "")}</textarea></label>
           <label class="field" for="edit-status"><span>Status</span>
             <select id="edit-status" name="status">
-              ${formatSelectOptions([["pending", "Menunggu verifikasi"], ["available", "Tersedia"], ["claimed", "Sudah diklaim"], ["matched", "Cocok"], ["resolved", "Selesai"], ["archived", "Diarsipkan"], ["rejected", "Ditolak"]], item.status)}
+              ${formatSelectOptions([["pending", "Belum diperiksa"], ["available", "Ada di pos"], ["claimed", "Ada yang mengaku"], ["matched", "Sudah ada pasangan"], ["resolved", "Sudah diambil"], ["archived", "Disimpan"], ["rejected", "Tidak ditampilkan"]], item.status)}
             </select></label>
-          <label class="field" for="edit-image"><span>Ganti foto <span class="field-hint">(opsional)</span></span>
-            <input id="edit-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
-            <span class="field-hint">JPG, PNG, atau WebP · maksimum 5 MB.</span></label>
+          ${imageField("Ganti gambar", "Pilih file JPG, PNG, atau WebP. Maksimal 5 MB.")}
         </div>
+        <div class="notice" style="margin:12px 0 0">${currentImage}<p class="photo-hint">Gambar yang sekarang dipakai.</p></div>
         <div class="form-actions">
           <button class="button button-primary" type="submit">Simpan perubahan</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
@@ -2107,7 +2175,7 @@ async function submitFoundEditor(form) {
     closeModal();
     await refreshAll();
     renderView();
-    setAlert("Perubahan barang temuan disimpan.", "success");
+    setAlert("Perubahan barang temuan sudah disimpan.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
@@ -2118,8 +2186,11 @@ async function submitFoundEditor(form) {
 function openLostEditor(id) {
   const item = state.maps.lost[id];
   if (!item) return;
+  const currentImage = item.imageUrl
+    ? `<div class="photo-frame">${renderImage(item.imageUrl, "Gambar barang", "")}</div>`
+    : `<div class="photo-frame is-empty"><div class="photo-placeholder">Belum ada gambar</div></div>`;
   openModal(`
-    ${modalHeader("Edit laporan kehilangan", "Perbarui data laporan milik pengguna.")}
+    ${modalHeader("Edit laporan kehilangan", "Ubah data laporan milik siswa.")}
     <div class="panel-modal-content">
       <form id="panel-edit-lost" data-id="${escapeAttribute(item.id)}">
         <div class="form-grid">
@@ -2130,26 +2201,25 @@ function openLostEditor(id) {
               <option value="" disabled${!item.category ? " selected" : ""}>Pilih kategori</option>
               ${CATEGORY_OPTIONS.map((category) => `<option value="${escapeAttribute(category)}"${item.category === category ? " selected" : ""}>${escapeHtml(category)}</option>`).join("")}
             </select></label>
-          <label class="field field-full" for="edit-description"><span>Deskripsi</span>
+          <label class="field field-full" for="edit-description"><span>Ciri-ciri</span>
             <textarea id="edit-description" name="description" required minlength="5" maxlength="2000">${escapeHtml(item.description || "")}</textarea></label>
           <label class="field field-full" for="edit-features"><span>Ciri khusus</span>
             <textarea id="edit-features" name="distinctive_features" maxlength="1500">${escapeHtml(item.distinctive_features || "")}</textarea></label>
-          <label class="field" for="edit-location"><span>Lokasi terakhir terlihat</span>
+          <label class="field" for="edit-location"><span>Terakhir terlihat di</span>
             <input id="edit-location" name="last_seen_location" type="text" maxlength="180" required value="${escapeAttribute(item.last_seen_location || "")}"></label>
           <label class="field" for="edit-color"><span>Warna dominan</span>
             <input id="edit-color" name="color" type="text" maxlength="40" value="${escapeAttribute(item.color || "")}"></label>
-          <label class="field" for="edit-date"><span>Tanggal / waktu hilang</span>
+          <label class="field" for="edit-date"><span>Tanggal hilang</span>
             <input id="edit-date" name="lost_at" type="datetime-local" required value="${escapeAttribute(toLocalInput(item.lost_at))}"></label>
           <label class="field" for="edit-status"><span>Status</span>
             <select id="edit-status" name="status">
-              ${formatSelectOptions([["pending", "Menunggu verifikasi"], ["under_review", "Dalam peninjauan"], ["matched", "Cocok"], ["resolved", "Selesai"], ["rejected", "Ditolak"]], item.status)}
+              ${formatSelectOptions([["pending", "Belum diperiksa"], ["under_review", "Sedang diperiksa"], ["matched", "Sudah ada pasangan"], ["resolved", "Sudah diambil"], ["rejected", "Tidak ditampilkan"]], item.status)}
             </select></label>
-          <label class="field field-full" for="edit-additional"><span>Informasi tambahan</span>
+          <label class="field field-full" for="edit-additional"><span>Info tambahan</span>
             <textarea id="edit-additional" name="additional_info" maxlength="1500">${escapeHtml(item.additional_info || "")}</textarea></label>
-          <label class="field field-full" for="edit-image"><span>Pasang foto <span class="field-hint">(opsional)</span></span>
-            <input id="edit-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
-            <span class="field-hint">JPG, PNG, atau WebP · maksimum 5 MB.</span></label>
+          ${imageField("Pasang gambar", "Pilih file JPG, PNG, atau WebP. Maksimal 5 MB.")}
         </div>
+        <div class="notice" style="margin:12px 0 0">${currentImage}<p class="photo-hint">Gambar yang sekarang dipakai.</p></div>
         <div class="form-actions">
           <button class="button button-primary" type="submit">Simpan perubahan</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
@@ -2196,7 +2266,7 @@ async function submitLostEditor(form) {
     closeModal();
     await refreshAll();
     renderView();
-    setAlert("Perubahan laporan kehilangan disimpan.", "success");
+    setAlert("Perubahan laporan kehilangan sudah disimpan.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
@@ -2208,23 +2278,23 @@ function openAnnouncementForm(id) {
   const row = id ? state.data.announcements.find((entry) => entry.id === id) : null;
   const expires = row && row.expires_at ? String(row.expires_at).slice(0, 10) : "";
   openModal(`
-    ${modalHeader(row ? "Edit pengumuman" : "Buat pengumuman", "Pengumuman tayang langsung di halaman utama pengguna setelah diterbitkan.")}
+    ${modalHeader(row ? "Edit pengumuman" : "Buat pengumuman", "Pengumuman langsung muncul di halaman siswa setelah diterbitkan.")}
     <div class="panel-modal-content">
       <form id="panel-announcement" data-id="${escapeAttribute(row ? row.id : "")}">
         <div class="form-grid">
-          <label class="field field-full" for="ann-title"><span>Judul</span>
-            <input id="ann-title" name="title" type="text" required maxlength="140" value="${escapeAttribute(row ? row.title : "")}"></label>
-          <label class="field" for="ann-level"><span>Tingkat prioritas</span>
+          <label class="field field-full" for="ann-title"><span>Judul pengumuman</span>
+            <input id="ann-title" name="title" type="text" required maxlength="140" value="${escapeAttribute(row ? row.title : "")}" placeholder="Contoh: Barang temuan diambil paling lambat 30 hari"></label>
+          <label class="field" for="ann-level"><span>Seberapa penting?</span>
             <select id="ann-level" name="level">
-              ${formatSelectOptions([["info", "Informasi"], ["penting", "Penting"], ["urgent", "Urgent"]], row ? row.level : "info")}
+              ${formatSelectOptions([["info", "Biasa"], ["penting", "Penting"], ["urgent", "Sangat penting"]], row ? row.level : "info")}
             </select></label>
-          <label class="field" for="ann-expires"><span>Berakhir pada <span class="field-hint">(opsional)</span></span>
+          <label class="field" for="ann-expires"><span>Selesai tanggal <span class="field-hint">(boleh dikosongkan)</span></span>
             <input id="ann-expires" name="expires_at" type="date" value="${escapeAttribute(expires)}"></label>
           <label class="field field-full" for="ann-body"><span>Isi pengumuman</span>
-            <textarea id="ann-body" name="body" required maxlength="2000">${escapeHtml(row ? row.body : "")}</textarea></label>
-          <label class="field field-full" for="ann-publish"><span>Status terbit</span>
+            <textarea id="ann-body" name="body" required maxlength="2000" placeholder="Tulis dengan kalimat singkat dan jelas.">${escapeHtml(row ? row.body : "")}</textarea></label>
+          <label class="field field-full" for="ann-publish"><span>Mau langsung ditampilkan?</span>
             <select id="ann-publish" name="is_published">
-              ${formatSelectOptions([["false", "Simpan sebagai draf"], ["true", "Terbitkan sekarang"]], row && row.is_published ? "true" : "false")}
+              ${formatSelectOptions([["false", "Simpan dulu (belum tampil)"], ["true", "Tampilkan sekarang"]], row && row.is_published ? "true" : "false")}
             </select></label>
         </div>
         <div class="form-actions">
@@ -2259,31 +2329,23 @@ async function submitAnnouncement(form) {
     if (id) {
       const { error } = await state.client.from("announcements").update(payload).eq("id", id);
       if (error) throw error;
+      if (publish) await state.client.rpc("panel_publish_announcement", { p_id: id, p_published: true });
     } else {
-      const { error } = await state.client.from("announcements").insert({ ...payload, created_by: state.user.id });
+      const { data: inserted, error } = await state.client.from("announcements").insert({ ...payload, created_by: state.user.id }).select("id").single();
       if (error) throw error;
-    }
-
-    if (publish) {
-      const announcementId = id || (await latestAnnouncementId());
-      if (announcementId) await state.client.rpc("panel_publish_announcement", { p_id: announcementId, p_published: true });
+      const newId = inserted && inserted.id ? inserted.id : null;
+      if (publish && newId) await state.client.rpc("panel_publish_announcement", { p_id: newId, p_published: true });
     }
 
     closeModal();
     await refreshAll();
     renderView();
-    setAlert(publish ? "Pengumuman diterbitkan dan pengguna menerima notifikasi." : "Pengumuman disimpan sebagai draf.", "success");
+    setAlert(publish ? "Pengumuman sudah tampil di halaman siswa." : "Pengumuman disimpan tapi belum ditampilkan.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
     button.textContent = originalText;
   }
-}
-
-async function latestAnnouncementId() {
-  const { data, error } = await state.client.from("announcements").select("id").order("created_at", { ascending: false }).limit(1);
-  if (error || !data || !data.length) return null;
-  return data[0].id;
 }
 
 async function toggleAnnouncement(id, publish) {
@@ -2292,7 +2354,7 @@ async function toggleAnnouncement(id, publish) {
     if (error) throw error;
     await refreshAll();
     renderView();
-    setAlert(publish ? "Pengumuman tayang di halaman pengguna." : "Pengumuman ditarik dari halaman pengguna.", "success");
+    setAlert(publish ? "Pengumuman sekarang tampil di halaman siswa." : "Pengumuman disembunyikan dari halaman siswa.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
   }
@@ -2303,23 +2365,22 @@ function openNotificationForm(presetUserId) {
     .filter((row) => !row.blocked)
     .map((row) => [row.id, `${row.full_name || "(tanpa nama)"} · ${row.email}`]);
   openModal(`
-    ${modalHeader("Kirim notifikasi", "Notifikasi tampil pada daftar pemberitahuan pengguna.")}
+    ${modalHeader("Kirim pesan ke pengguna", "Pesan muncul di daftar pemberitahuan pengguna.")}
     <div class="panel-modal-content">
-      <p class="notice">Email notifikasi dikirim oleh Supabase bila pengiriman email diaktifkan pada project. Panel ini mencatat notifikasi dalam sistem.</p>
       <form id="panel-notification">
         <div class="form-grid">
-          <label class="field field-full" for="notif-target"><span>Penerima</span>
+          <label class="field field-full" for="notif-target"><span>Kirim ke siapa?</span>
             <select id="notif-target" name="target" required>
-              <option value="all">Semua pengguna aktif</option>
+              <option value="all">Semua pengguna</option>
               ${formatSelectOptions(options, presetUserId || "")}
             </select></label>
-          <label class="field field-full" for="notif-title"><span>Judul</span>
-            <input id="notif-title" name="title" type="text" required maxlength="140"></label>
+          <label class="field field-full" for="notif-title"><span>Judul pesan</span>
+            <input id="notif-title" name="title" type="text" required maxlength="140" placeholder="Contoh: Barangmu kemungkinan sudah ditemukan"></label>
           <label class="field field-full" for="notif-body"><span>Isi pesan</span>
-            <textarea id="notif-body" name="body" maxlength="1000" required></textarea></label>
+            <textarea id="notif-body" name="body" maxlength="1000" required placeholder="Tulis singkat dan jelas ya."></textarea></label>
         </div>
         <div class="form-actions">
-          <button class="button button-primary" type="submit">Kirim</button>
+          <button class="button button-primary" type="submit">Kirim pesan</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
         </div>
       </form>
@@ -2340,8 +2401,7 @@ async function submitNotification(form) {
     const recipients = target === "all"
       ? state.data.profiles.filter((row) => !row.blocked).map((row) => row.id)
       : [target];
-    if (!recipients.length) throw new Error("Tidak ada penerima yang tersedia.");
-
+    if (!recipients.length) throw new Error("Belum ada penerima yang bisa dikirim.");
     for (const userId of recipients) {
       const { error } = await state.client.rpc("panel_send_notification", { p_user_id: userId, p_title: title, p_body: body });
       if (error) throw error;
@@ -2349,7 +2409,7 @@ async function submitNotification(form) {
     closeModal();
     await refreshAll();
     renderView();
-    setAlert(`Notifikasi terkirim ke ${recipients.length} pengguna.`, "success");
+    setAlert(`Pesan terkirim ke ${recipients.length} pengguna.`, "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
@@ -2360,24 +2420,24 @@ async function submitNotification(form) {
 function openTicketForm() {
   const options = state.data.profiles.map((row) => [row.id, `${row.full_name || "(tanpa nama)"} · ${row.email}`]);
   openModal(`
-    ${modalHeader("Tambah tiket moderasi", "Catat indikasi percakapan tidak wajar, konten tidak pantas, atau upaya pemerasan.")}
+    ${modalHeader("Catat masalah", "Catat kejadian yang perlu ditindak, contohnya laporan palsu atau percakapan tidak sopan.")}
     <div class="panel-modal-content">
       <form id="panel-ticket">
         <div class="form-grid">
-          <label class="field" for="ticket-subject"><span>Pengguna terkait</span>
+          <label class="field" for="ticket-subject"><span>Pengguna yang berkaitan</span>
             <select id="ticket-subject" name="subject_id" required>
               <option value="" disabled selected>Pilih pengguna</option>
               ${formatSelectOptions(options, "")}
             </select></label>
-          <label class="field" for="ticket-category"><span>Kategori</span>
+          <label class="field" for="ticket-category"><span>Jenis masalah</span>
             <select id="ticket-category" name="category">
               ${formatSelectOptions(TICKET_CATEGORIES.map((value) => [value, value]), TICKET_CATEGORIES[0])}
             </select></label>
-          <label class="field field-full" for="ticket-detail"><span>Uraian</span>
+          <label class="field field-full" for="ticket-detail"><span>Ceritakan kejadiannya</span>
             <textarea id="ticket-detail" name="detail" required maxlength="1500"></textarea></label>
         </div>
         <div class="form-actions">
-          <button class="button button-primary" type="submit">Simpan tiket</button>
+          <button class="button button-primary" type="submit">Simpan catatan</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
         </div>
       </form>
@@ -2402,7 +2462,7 @@ async function submitTicket(form) {
     closeModal();
     await refreshAll();
     renderView();
-    setAlert("Tiket moderasi dibuat.", "success");
+    setAlert("Masalah sudah dicatat.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
@@ -2414,12 +2474,12 @@ function openTicketNote(ticketId) {
   const ticket = state.data.tickets.find((row) => String(row.id) === String(ticketId));
   if (!ticket) return;
   openModal(`
-    ${modalHeader("Catat tindak lanjut", "Hasil pemeriksaan tiket moderasi.")}
+    ${modalHeader("Tulis tindak lanjut", "Apa yang sudah kamu lakukan untuk masalah ini?")}
     <div class="panel-modal-content">
       <form id="panel-ticket-note" data-id="${escapeAttribute(ticket.id)}">
         <label class="field" for="ticket-resolution"><span>Tindak lanjut</span>
           <textarea id="ticket-resolution" name="resolution" required maxlength="1500">${escapeHtml(ticket.resolution || "")}</textarea></label>
-        <label class="field" for="ticket-status"><span>Status</span>
+        <label class="field" for="ticket-status"><span>Status masalah</span>
           <select id="ticket-status" name="status">
             ${formatSelectOptions(TICKET_STATUSES.map((value) => [value, STATUS_LABELS[value] || value]), ticket.status)}
           </select></label>
@@ -2428,7 +2488,7 @@ function openTicketNote(ticketId) {
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
         </div>
       </form>
-    </div>`, { narrow: true, title: "Tindak lanjut tiket" });
+    </div>`, { narrow: true, title: "Tindak lanjut" });
 }
 
 async function submitTicketNote(form) {
@@ -2447,7 +2507,7 @@ async function submitTicketNote(form) {
     closeModal();
     await refreshAll();
     renderView();
-    setAlert("Tindak lanjut tiket tersimpan.", "success");
+    setAlert("Tindak lanjut sudah disimpan.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
@@ -2460,21 +2520,21 @@ function openHandoverForm(claimId) {
   const claimant = claim ? state.maps.profiles[claim.claimant_id] : null;
   const item = claim ? state.maps.found[claim.found_item_id] : null;
   openModal(`
-    ${modalHeader("Berita acara serah terima", "Dicatat saat barang diserahkan kepada pemiliknya.")}
+    ${modalHeader("Serah terima barang", "Isi saat barang benar-benar diserahkan ke pemiliknya.")}
     <div class="panel-modal-content">
-      <p class="notice">Barang: <strong>${escapeHtml(item ? item.name : "Barang temuan")}</strong> · Diserahkan kepada <strong>${escapeHtml(claimant ? (claimant.full_name || claimant.email) : "pemilik")}</strong></p>
+      <p class="notice">Barang: <b>${escapeHtml(item ? item.name : "Barang temuan")}</b> · Diberikan kepada <b>${escapeHtml(claimant ? (claimant.full_name || claimant.email) : "pemilik")}</b></p>
       <form id="panel-handover" data-id="${escapeAttribute(claimId)}">
         <div class="form-grid">
           <label class="field" for="handover-name"><span>Nama penerima</span>
             <input id="handover-name" name="receiver_name" type="text" required maxlength="140" value="${escapeAttribute(claimant ? (claimant.full_name || "") : "")}"></label>
-          <label class="field" for="handover-signature"><span>Tanda tangan digital <span class="field-hint">(gambar, opsional)</span></span>
+          <label class="field" for="handover-signature"><span>Tanda tangan / foto berita acara <span class="field-hint">(opsional)</span></span>
             <input id="handover-signature" name="signature" type="file" accept="image/png,image/jpeg,image/webp">
-            <span class="field-hint">Unggah hasil tanda tangan atau foto berita acara.</span></label>
+            <span class="field-hint">Unggah foto tanda tangan atau berita acaranya.</span></label>
           <label class="field field-full" for="handover-note"><span>Catatan</span>
-            <textarea id="handover-note" name="note" maxlength="1000" placeholder="Kondisi barang, identitas tambahan yang diperiksa…"></textarea></label>
+            <textarea id="handover-note" name="note" maxlength="1000" placeholder="Contoh: barang diterima lengkap dan tidak rusak."></textarea></label>
         </div>
         <div class="form-actions">
-          <button class="button button-primary" type="submit">Simpan &amp; tandai selesai</button>
+          <button class="button button-primary" type="submit">Simpan &amp; tandai sudah diambil</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
         </div>
       </form>
@@ -2501,11 +2561,11 @@ async function submitHandover(form) {
 
 function openRejectClaimForm(claimId) {
   openModal(`
-    ${modalHeader("Tolak klaim", "Alasan akan dikirim kepada pemohon.")}
+    ${modalHeader("Tolak klaim", "Tulis alasannya supaya pemohon mengerti.")}
     <div class="panel-modal-content">
       <form id="panel-reject-claim" data-id="${escapeAttribute(claimId)}">
         <label class="field" for="reject-note"><span>Alasan penolakan</span>
-          <textarea id="reject-note" name="note" required minlength="5" maxlength="800" placeholder="Mis. ciri kepemilikan tidak sesuai dengan barang."></textarea></label>
+          <textarea id="reject-note" name="note" required minlength="5" maxlength="800" placeholder="Contoh: ciri barang yang disebut belum cocok dengan barangnya."></textarea></label>
         <div class="form-actions">
           <button class="button button-danger" type="submit">Tolak klaim</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
@@ -2529,18 +2589,18 @@ async function submitRejectClaim(form) {
 function openManualMatchForm() {
   const foundOptions = state.data.found
     .filter((row) => !["rejected", "archived"].includes(row.status))
-    .map((row) => [row.id, `${row.name || "Tanpa nama"} · ${row.category || "tanpa kategori"} · ${row.location_found || "lokasi belum dicatat"}`]);
+    .map((row) => [row.id, `${row.name || "Tanpa nama"} · ${row.category || "tanpa kategori"} · ${row.location_found || "lokasi belum diisi"}`]);
   const lostOptions = state.data.lost
     .filter((row) => row.status !== "rejected")
-    .map((row) => [row.id, `${row.name || "Tanpa nama"} · ${row.category || "tanpa kategori"} · ${row.last_seen_location || "lokasi belum dicatat"}`]);
+    .map((row) => [row.id, `${row.name || "Tanpa nama"} · ${row.category || "tanpa kategori"} · ${row.last_seen_location || "lokasi belum diisi"}`]);
 
   if (!foundOptions.length || !lostOptions.length) {
-    setAlert("Pencocokan manual memerlukan minimal satu laporan hilang dan satu barang temuan.", "info");
+    setAlert("Butuh minimal satu laporan hilang dan satu barang temuan untuk mencocokkan manual.", "info");
     return;
   }
 
   openModal(`
-    ${modalHeader("Pencocokan manual", "Jodohkan dua laporan yang menurut Anda merujuk pada barang yang sama.")}
+    ${modalHeader("Cocokkan sendiri", "Pilih satu barang temuan dan satu laporan hilang yang kamu yakin barangnya sama.")}
     <div class="panel-modal-content">
       <form id="panel-manual-match">
         <div class="form-grid">
@@ -2556,7 +2616,7 @@ function openManualMatchForm() {
             </select></label>
         </div>
         <div class="form-actions">
-          <button class="button button-primary" type="submit">Simpan &amp; konfirmasi</button>
+          <button class="button button-primary" type="submit">Simpan &amp; cocokkan</button>
           <button class="button button-secondary" type="button" data-action="close-modal">Batal</button>
         </div>
       </form>
@@ -2582,16 +2642,16 @@ async function submitManualMatch(form) {
       p_method: "manual"
     });
     if (error) throw error;
-    const { error: confirmError } = await state.client.rpc("panel_confirm_match", { p_match_id: matchId, p_note: "Pencocokan manual oleh admin" });
+    const { error: confirmError } = await state.client.rpc("panel_confirm_match", { p_match_id: matchId, p_note: "Dicocokkan manual oleh pengelola" });
     if (confirmError) throw confirmError;
     closeModal();
     await refreshAll();
     renderView();
-    setAlert("Pencocokan manual dikonfirmasi dan pemilik laporan diberi notifikasi.", "success");
+    setAlert("Barang sudah dicocokkan dan pemiliknya menerima pemberitahuan.", "success");
   } catch (error) {
     setAlert(friendlyError(error), "error");
     button.disabled = false;
-    button.textContent = "Simpan & konfirmasi";
+    button.textContent = "Simpan & cocokkan";
   }
 }
 
@@ -2599,15 +2659,15 @@ function openHistoryModal(id, type) {
   const item = type === "found" ? state.maps.found[id] : state.maps.lost[id];
   const rows = state.data.history.filter((row) => row.item_type === type && String(row.item_id) === String(id));
   openModal(`
-    ${modalHeader(`Riwayat status · ${item ? item.name : "Laporan"}`, "Setiap perubahan status tercatat otomatis dengan pelakunya.")}
+    ${modalHeader(`Riwayat: ${item ? item.name : "Laporan"}`, "Ini daftar perubahan status barangnya.")}
     <div class="panel-modal-content">
       ${rows.length ? `<ul class="timeline">${rows.map((row) => {
         const actor = state.maps.profiles[row.changed_by];
         return `<li>
-          <strong>${escapeHtml(STATUS_LABELS[row.previous_status] || row.previous_status || "Dibuat")} → ${escapeHtml(STATUS_LABELS[row.new_status] || row.new_status)}</strong>
+          <strong>${escapeHtml(STATUS_LABELS[row.previous_status] || row.previous_status || "dibuat")} → ${escapeHtml(STATUS_LABELS[row.new_status] || row.new_status)}</strong>
           <span>${escapeHtml(formatDate(row.created_at))} · ${escapeHtml(actor ? (actor.full_name || actor.email) : "Sistem")}</span>
         </li>`;
-      }).join("")}</ul>` : emptyMarkup("Belum ada perubahan status", "Riwayat muncul setelah status laporan diperbarui.")}
+      }).join("")}</ul>` : emptyMarkup("Belum ada perubahan", "Riwayat muncul setelah status barang diubah.")}
     </div>`, { title: "Riwayat status" });
 }
 
@@ -2619,19 +2679,19 @@ function openUserHistoryModal(userId) {
   const claims = state.data.claims.filter((row) => row.claimant_id === userId);
 
   openModal(`
-    ${modalHeader("Riwayat keaktifan pengguna", profile ? (profile.full_name || profile.email) : "Pengguna")}
+    ${modalHeader("Riwayat pengguna", profile ? (profile.full_name || profile.email) : "Pengguna")}
     <div class="panel-modal-content">
       <dl class="detail-grid">
         <div><dt>Email</dt><dd>${escapeHtml(profile ? profile.email : "-")}</dd></div>
-        <div><dt>Role</dt><dd>${escapeHtml(ROLE_LABELS[normalizeRole(profile ? profile.role : "user")])}</dd></div>
-        <div><dt>Status akun</dt><dd>${profile && profile.blocked ? "Diblokir" : "Aktif"}</dd></div>
+        <div><dt>Jabatan</dt><dd>${escapeHtml(ROLE_LABELS[normalizeRole(profile ? profile.role : "user")])}</dd></div>
+        <div><dt>Kondisi akun</dt><dd>${profile && profile.blocked ? "Diblokir" : "Aktif"}</dd></div>
         <div><dt>Terakhir aktif</dt><dd>${escapeHtml(relativeTime(profile ? (profile.last_seen_at || profile.created_at) : null))}</dd></div>
         <div><dt>Laporan kehilangan</dt><dd>${lost.length}</dd></div>
         <div><dt>Barang temuan</dt><dd>${found.length}</dd></div>
         <div><dt>Klaim diajukan</dt><dd>${claims.length}</dd></div>
-        <div><dt>Terdaftar sejak</dt><dd>${escapeHtml(formatDate(profile ? profile.created_at : null))}</dd></div>
+        <div><dt>Daftar sejak</dt><dd>${escapeHtml(formatDate(profile ? profile.created_at : null))}</dd></div>
       </dl>
-      ${logs.length ? `<h2 class="section-title">Tindakan pada panel</h2><ul class="timeline">${logs.map((row) => `
+      ${logs.length ? `<h2 class="section-title">Tindakan di panel</h2><ul class="timeline">${logs.map((row) => `
         <li><strong>${escapeHtml(ACTION_LABELS[row.action] || row.action)}</strong><span>${escapeHtml(formatDate(row.created_at))} · ${escapeHtml(row.entity || "")}</span></li>`).join("")}</ul>` : ""}
     </div>`, { title: "Riwayat pengguna" });
 }
@@ -2643,18 +2703,15 @@ function openEvidence(claimId) {
     return;
   }
   signedUrl("claim-evidence", claim.evidence_path).then((url) => {
-    if (!url) return;
-    window.open(url, "_blank", "noopener");
+    if (url) window.open(url, "_blank", "noopener");
   });
 }
 
 function exportCsv(scope) {
-  const formatters = {
-    csvDate: (value) => (value ? new Date(value).toISOString() : ""),
-    profile: (id) => {
-      const profile = state.maps.profiles[id];
-      return profile ? (profile.email || profile.full_name || "") : "";
-    }
+  const csvDate = (value) => (value ? new Date(value).toISOString() : "");
+  const profileOf = (id) => {
+    const profile = state.maps.profiles[id];
+    return profile ? (profile.email || profile.full_name || "") : "";
   };
 
   let rows = [];
@@ -2664,50 +2721,50 @@ function exportCsv(scope) {
   if (scope === "lost") {
     rows = state.data.lost.filter((row) => matchesFilters(row, "lost", "lost_at", "last_seen_location"));
     columns = [
-      { label: "Nama", value: (row) => row.name },
-      { label: "Kategori", value: (row) => row.category },
-      { label: "Warna", value: (row) => row.color },
-      { label: "Lokasi terakhir", value: (row) => row.last_seen_location },
-      { label: "Waktu hilang", value: (row) => formatters.csvDate(row.lost_at || row.created_at) },
-      { label: "Status", value: (row) => STATUS_LABELS[row.status] || row.status },
-      { label: "Pelapor", value: (row) => formatters.profile(row.reported_by) },
-      { label: "Deskripsi", value: (row) => row.description }
+      ["Nama barang", (row) => row.name],
+      ["Kategori", (row) => row.category],
+      ["Warna", (row) => row.color],
+      ["Terakhir terlihat", (row) => row.last_seen_location],
+      ["Waktu hilang", (row) => csvDate(row.lost_at || row.created_at)],
+      ["Status", (row) => STATUS_LABELS[row.status] || row.status],
+      ["Pelapor", (row) => profileOf(row.reported_by)],
+      ["Ciri-ciri", (row) => row.description]
     ];
-    filename = "laporan-barang-hilang.csv";
+    filename = "daftar-barang-hilang.csv";
   } else if (scope === "found") {
     rows = state.data.found.filter((row) => matchesFilters(row, "found", "found_at", "location_found"));
     columns = [
-      { label: "Nama", value: (row) => row.name },
-      { label: "Kategori", value: (row) => row.category },
-      { label: "Warna", value: (row) => row.color },
-      { label: "Lokasi temuan", value: (row) => row.location_found },
-      { label: "Penyimpanan", value: (row) => row.storage_location },
-      { label: "Waktu ditemukan", value: (row) => formatters.csvDate(row.found_at || row.created_at) },
-      { label: "Status", value: (row) => STATUS_LABELS[row.status] || row.status },
-      { label: "Pelapor", value: (row) => formatters.profile(row.reported_by) },
-      { label: "Deskripsi", value: (row) => row.description }
+      ["Nama barang", (row) => row.name],
+      ["Kategori", (row) => row.category],
+      ["Warna", (row) => row.color],
+      ["Ditemukan di", (row) => row.location_found],
+      ["Disimpan di", (row) => row.storage_location],
+      ["Waktu ditemukan", (row) => csvDate(row.found_at || row.created_at)],
+      ["Status", (row) => STATUS_LABELS[row.status] || row.status],
+      ["Pelapor", (row) => profileOf(row.reported_by)],
+      ["Ada gambar?", (row) => (row.image_path ? "Ada" : "Belum ada")]
     ];
-    filename = "barang-temuan.csv";
+    filename = "daftar-barang-temuan.csv";
   } else {
     rows = state.data.audit.slice(0, 500);
     columns = [
-      { label: "Waktu", value: (row) => formatters.csvDate(row.created_at) },
-      { label: "Pengelola", value: (row) => row.actor_email },
-      { label: "Tindakan", value: (row) => ACTION_LABELS[row.action] || row.action },
-      { label: "Objek", value: (row) => row.entity },
-      { label: "Keterangan", value: (row) => describeDetail(row) }
+      ["Waktu", (row) => csvDate(row.created_at)],
+      ["Pengelola", (row) => row.actor_email],
+      ["Tindakan", (row) => ACTION_LABELS[row.action] || row.action],
+      ["Objek", (row) => row.entity],
+      ["Keterangan", (row) => describeDetail(row)]
     ];
-    filename = "log-audit-panel.csv";
+    filename = "catatan-aktivitas.csv";
   }
 
   if (!rows.length) {
-    setAlert("Tidak ada data untuk diekspor pada filter saat ini.", "info");
+    setAlert("Belum ada data untuk diunduh pada filter ini.", "info");
     return;
   }
 
   const cell = (value) => `"${String(value == null ? "" : value).replace(/"/g, '""')}"`;
-  const lines = [columns.map((column) => cell(column.label)).join(";")];
-  rows.forEach((row) => lines.push(columns.map((column) => cell(column.value(row))).join(";")));
+  const lines = [columns.map(([label]) => cell(label)).join(";")];
+  rows.forEach((row) => lines.push(columns.map(([, getter]) => cell(getter(row))).join(";")));
 
   const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -2718,7 +2775,7 @@ function exportCsv(scope) {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  setAlert(`Ekspor ${filename} dimulai.`, "success");
+  setAlert(`File ${filename} sedang diunduh.`, "success");
 }
 
 const ACTIONS = {
@@ -2732,38 +2789,35 @@ const ACTIONS = {
   "refresh-data": async () => {
     await refreshAll();
     renderView();
-    if (!state.loadError) setAlert("Data terbaru berhasil dimuat.", "success");
+    if (!state.loadError) setAlert("Data sudah diperbarui.", "success");
   },
   "reset-filters": (button) => {
     const scope = button.dataset.scope;
-    if (state.filters[scope]) {
-      Object.keys(state.filters[scope]).forEach((key) => { state.filters[scope][key] = key === "min" ? "60" : key === "category" || key === "status" || key === "role" ? "all" : ""; });
-    }
+    if (DEFAULT_FILTERS[scope]) state.filters[scope] = JSON.parse(JSON.stringify(DEFAULT_FILTERS[scope]));
     if (state.dates[scope]) state.dates[scope] = { from: "", to: "" };
     renderView();
   },
   "found-status": (button) => {
     const labels = {
-      available: "Barang disetujui dan tayang di halaman pengguna.",
-      claimed: "Barang ditandai sudah diklaim.",
-      resolved: "Barang ditandai sudah diserahkan.",
-      archived: "Barang diarsipkan.",
-      rejected: "Laporan ditolak dan tidak tayang."
+      available: "Barang disetujui dan sekarang tampil di halaman siswa.",
+      claimed: "Barang ditandai “ada yang mengaku”.",
+      resolved: "Barang ditandai sudah diambil.",
+      archived: "Barang disimpan ke gudang.",
+      rejected: "Barang tidak ditampilkan."
     };
     updateStatus("found_items", button.dataset.id, button.dataset.status, labels[button.dataset.status]);
   },
   "lost-status": (button) => {
     const labels = {
-      under_review: "Laporan masuk tahap peninjauan.",
-      matched: "Laporan ditandai cocok dengan barang temuan.",
+      under_review: "Laporan sedang diperiksa.",
+      matched: "Laporan ditandai sudah ada pasangannya.",
       resolved: "Laporan ditandai selesai.",
-      rejected: "Laporan ditolak."
+      rejected: "Laporan tidak ditampilkan."
     };
     updateStatus("lost_reports", button.dataset.id, button.dataset.status, labels[button.dataset.status]);
   },
   "edit-found": (button) => openFoundEditor(button.dataset.id),
   "edit-lost": (button) => openLostEditor(button.dataset.id),
-  "upload-image": (button) => changeItemImage(button.dataset.meta, button.dataset.id),
   "delete-image": (button) => deleteItemImage(button.dataset.meta, button.dataset.id),
   "delete-record": (button) => deleteRecord(button.dataset.meta, button.dataset.id),
   "show-history": (button) => openHistoryModal(button.dataset.id, button.dataset.type),
@@ -2775,24 +2829,16 @@ const ACTIONS = {
   "dismiss-match": (button) => reviewMatch(button.dataset.id, "dismiss"),
   "claim-approve": async (button) => {
     const approved = await confirmAction({
-      title: "Setujui klaim",
-      message: "Bukti kepemilikan sudah sesuai? Barang akan ditandai sudah diklaim dan pemohon menerima notifikasi.",
-      confirmLabel: "Setujui klaim",
+      title: "Setujui klaim ini?",
+      message: "Pastikan bukti kepemilikannya sudah cocok. Barang akan ditandai “ada yang mengaku” dan pemohon menerima pemberitahuan.",
+      confirmLabel: "Ya, setujui",
       danger: false
     });
-    if (approved) reviewClaim(button.dataset.id, "approved", "Bukti kepemilikan diverifikasi petugas");
+    if (approved) reviewClaim(button.dataset.id, "approved", "Bukti kepemilikan sudah diperiksa petugas");
   },
   "claim-reject": (button) => openRejectClaimForm(button.dataset.id),
   "claim-handover": (button) => openHandoverForm(button.dataset.id),
   "claim-evidence": (button) => openEvidence(button.dataset.id),
-  "open-item": (button) => {
-    const item = state.maps.found[button.dataset.id];
-    if (!item) return;
-    state.view = "found";
-    state.filters.found.search = item.name || "";
-    renderView();
-    if (typeof window.scrollTo === "function") window.scrollTo({ top: 0, behavior: "auto" });
-  },
   "new-announcement": () => openAnnouncementForm(null),
   "edit-announcement": (button) => openAnnouncementForm(button.dataset.id),
   "toggle-announcement": (button) => toggleAnnouncement(button.dataset.id, button.dataset.published === "true"),
@@ -2811,16 +2857,16 @@ const ACTIONS = {
     }
     await refreshAll();
     renderView();
-    setAlert(`Status tiket diperbarui menjadi ${STATUS_LABELS[button.dataset.status] || button.dataset.status}.`, "success");
+    setAlert(`Status masalah diubah menjadi ${STATUS_LABELS[button.dataset.status] || button.dataset.status}.`, "success");
   },
   "block-user": async (button) => {
     const profile = state.maps.profiles[button.dataset.id];
     const answer = await promptModal({
-      title: "Blokir pengguna",
-      message: `Blokir akun ${profile ? profile.email : "ini"}? Pengguna tidak dapat lagi melaporkan barang.`,
-      field: "Alasan blokir (opsional)",
+      title: "Blokir akun ini?",
+      message: `Akun ${profile ? profile.email : "ini"} tidak akan bisa melapor lagi.`,
+      field: "Alasan blokir (boleh dikosongkan)",
       required: false,
-      confirmLabel: "Blokir akun"
+      confirmLabel: "Ya, blokir"
     });
     if (answer === null) return;
     try {
@@ -2828,16 +2874,16 @@ const ACTIONS = {
       if (error) throw error;
       await refreshAll();
       renderView();
-      setAlert("Akun diblokir dan tercatat pada log audit.", "success");
+      setAlert("Akun sudah diblokir.", "success");
     } catch (error) {
       setAlert(friendlyError(error), "error");
     }
   },
   "unblock-user": async (button) => {
     const approved = await confirmAction({
-      title: "Buka blokir",
-      message: "Akun ini akan dapat kembali menggunakan layanan Lost & Found.",
-      confirmLabel: "Buka blokir",
+      title: "Buka blokir akun?",
+      message: "Akun ini bisa memakai layanan Lost & Found lagi.",
+      confirmLabel: "Ya, buka blokir",
       danger: false
     });
     if (!approved) return;
@@ -2846,7 +2892,7 @@ const ACTIONS = {
       if (error) throw error;
       await refreshAll();
       renderView();
-      setAlert("Blokir akun dibuka.", "success");
+      setAlert("Blokir akun sudah dibuka.", "success");
     } catch (error) {
       setAlert(friendlyError(error), "error");
     }
@@ -2859,37 +2905,6 @@ const ACTIONS = {
   "close-modal": () => closeModal()
 };
 
-function promptModal({ title, message, field, required = true, confirmLabel = "Simpan", danger = true }) {
-  return new Promise((resolve) => {
-    openModal(`
-      ${modalHeader(title)}
-      <div class="panel-modal-content">
-        <p class="notice">${escapeHtml(message)}</p>
-        <form id="panel-prompt">
-          <label class="field" for="prompt-value"><span>${escapeHtml(field)}</span>
-            <input id="prompt-value" name="value" type="text" maxlength="400"${required ? " required" : ""}></label>
-          <div class="form-actions">
-            <button class="button ${danger ? "button-danger" : "button-primary"}" type="submit">${escapeHtml(confirmLabel)}</button>
-            <button class="button button-secondary" type="button" data-prompt-cancel="true">Batal</button>
-          </div>
-        </form>
-      </div>`, { narrow: true, title });
-
-    const form = document.getElementById("panel-prompt");
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const value = String(new FormData(form).get("value") || "").trim();
-      closeModal();
-      resolve(value);
-    });
-    const cancel = elements.dialogRoot.querySelector("[data-prompt-cancel]");
-    if (cancel) cancel.addEventListener("click", () => {
-      closeModal();
-      resolve(null);
-    }, { once: true });
-  });
-}
-
 function handlePanelClick(event) {
   const target = event.target.closest("[data-action]");
   if (!target) return;
@@ -2898,6 +2913,7 @@ function handlePanelClick(event) {
     if (event.target === target) closeModal();
     return;
   }
+  if (action === "upload-image") return;
   const handler = ACTIONS[action];
   if (handler) {
     event.preventDefault();
@@ -2906,6 +2922,13 @@ function handlePanelClick(event) {
 }
 
 function handlePanelChange(event) {
+  const uploadInput = event.target.closest("input[data-action='upload-image']");
+  if (uploadInput) {
+    const file = uploadInput.files && uploadInput.files[0] ? uploadInput.files[0] : null;
+    if (file) changeItemImage(uploadInput.dataset.meta, uploadInput.dataset.id, file);
+    else uploadInput.value = "";
+    return;
+  }
   const roleSelect = event.target.closest("[data-action='change-role']");
   if (roleSelect) {
     applyRoleChange(roleSelect.dataset.id, roleSelect.value, roleSelect);
@@ -2926,9 +2949,9 @@ function handlePanelChange(event) {
 async function applyRoleChange(userId, role, select) {
   const previous = state.maps.profiles[userId] ? state.maps.profiles[userId].role : "user";
   const approved = await confirmAction({
-    title: "Ubah role pengguna",
-    message: `Ubah role menjadi ${ROLE_LABELS[role] || role}? Hak akses pada panel menyesuaikan role tersebut.`,
-    confirmLabel: "Ubah role",
+    title: "Ubah jabatan pengguna?",
+    message: `Jabatan akan menjadi ${ROLE_LABELS[role] || role}. Hak akses di panel ikut menyesuaikan.`,
+    confirmLabel: "Ya, ubah",
     danger: false
   });
   if (!approved) {
@@ -2940,7 +2963,7 @@ async function applyRoleChange(userId, role, select) {
     if (error) throw error;
     await refreshAll();
     renderView();
-    setAlert(`Role pengguna diperbarui menjadi ${ROLE_LABELS[role] || role}.`, "success");
+    setAlert(`Jabatan pengguna sekarang ${ROLE_LABELS[role] || role}.`, "success");
   } catch (error) {
     select.value = previous;
     setAlert(friendlyError(error), "error");
@@ -2973,9 +2996,9 @@ function setCookieNoticeOpen(isOpen) {
 }
 
 window.addEventListener("beforeunload", (event) => {
-  if (!state.pendingImage) return undefined;
+  if (!state.uploadingKey) return undefined;
   event.preventDefault();
-  event.returnValue = "Unggahan foto belum selesai. Yakin ingin keluar?";
+  event.returnValue = "Gambar belum selesai diunggah. Yakin mau keluar?";
   return event.returnValue;
 });
 
