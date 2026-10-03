@@ -22,18 +22,8 @@
       <h1 id="login-title" class="visually-hidden">Lost &amp; Found</h1>
 
       <div id="login-methods">
-        <form id="login-form" class="login-form" novalidate aria-labelledby="login-title">
-          <label class="visually-hidden" for="login-email" data-i18n="emailLabel">Email akun BPK PENABUR</label>
-          <input id="login-email" class="login-input" name="email" type="email" autocomplete="username" data-i18n-placeholder="emailPh" placeholder="Email BPK PENABUR" required>
-          <label class="visually-hidden" for="login-password" data-i18n="passLabel">Kata sandi</label>
-          <input id="login-password" class="login-input" name="password" type="password" autocomplete="current-password" data-i18n-placeholder="passPh" placeholder="Kata sandi" required>
-          <div id="login-message" class="form-message" role="alert" aria-live="polite" hidden></div>
-          <button id="login-submit" class="login-submit" type="submit" data-i18n="submit">Masuk</button>
-        </form>
-
-        <button id="forgot-password" class="login-text-link" type="button" data-i18n="forgot">Lupa kata sandi?</button>
-        <div class="login-divider" role="separator"></div>
-        <h2 class="oauth-heading" data-i18n="oauth">Masuk menggunakan akun Anda:</h2>
+        <div id="login-message" class="form-message" role="alert" aria-live="polite" hidden></div>
+        <h2 class="oauth-heading" data-i18n="oauth">Masuk dengan akun Google sekolah:</h2>
         <button id="google-login" class="google-login" type="button">
           <svg class="google-mark" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#4285F4" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12S17.4 12 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.3-.4-3.5z"/>
@@ -43,6 +33,7 @@
           </svg>
           <span>Google</span>
         </button>
+        <p class="login-hint" data-i18n="loginHint">Gunakan akun Google BPK PENABUR untuk masuk.</p>
 
         <div id="setup-notice" class="setup-notice" role="status" data-i18n="setup" hidden>
           <strong>Konfigurasi diperlukan</strong>
@@ -50,23 +41,9 @@
         </div>
       </div>
 
-      <section id="password-recovery-view" class="password-recovery-view" aria-labelledby="recovery-title" hidden>
-        <h2 id="recovery-title" data-i18n="recTitle">Atur ulang kata sandi</h2>
-        <p class="recovery-copy" data-i18n="recCopy">Buat kata sandi baru untuk akun BPK PENABUR Anda.</p>
-        <form id="recovery-form" class="login-form" novalidate>
-          <label class="visually-hidden" for="recovery-password" data-i18n="newPassLabel">Kata sandi baru</label>
-          <input id="recovery-password" class="login-input" name="password" type="password" autocomplete="new-password" minlength="8" data-i18n-placeholder="newPassPh" placeholder="Kata sandi baru" required>
-          <label class="visually-hidden" for="recovery-password-confirm" data-i18n="repeatLabel">Ulangi kata sandi</label>
-          <input id="recovery-password-confirm" class="login-input" name="password_confirm" type="password" autocomplete="new-password" minlength="8" data-i18n-placeholder="repeatPh" placeholder="Ulangi kata sandi" required>
-          <div id="recovery-message" class="form-message" role="alert" aria-live="polite" hidden></div>
-          <button id="recovery-submit" class="login-submit" type="submit" data-i18n="save">Simpan kata sandi</button>
-        </form>
-        <button id="recovery-back" class="login-text-link" type="button" data-i18n="back">Kembali ke login</button>
-      </section>
-
       <div id="cookie-notice-panel" class="cookie-notice-panel" role="dialog" aria-labelledby="cookie-notice-title" hidden>
         <h2 id="cookie-notice-title" data-i18n="cookieTitle">Pemberitahuan sesi</h2>
-        <p data-i18n="cookieText">Portal menggunakan penyimpanan browser Supabase untuk menjaga sesi login. Kata sandi tidak disimpan oleh aplikasi.</p>
+        <p data-i18n="cookieText">Portal menggunakan penyimpanan browser Supabase untuk menjaga sesi login. Masuk hanya bisa lewat akun Google sekolah.</p>
         <button id="cookie-notice-close" class="button button-secondary button-small" type="button" data-i18n="close">Tutup</button>
       </div>
       <footer class="login-footer">
@@ -133,5 +110,5 @@
   </div>
 
   <div id="dialog-root"></div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a449cb398bd1a24f',t:'MTc5MTAwNzkzMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44a4a610bd64080',t:'MTc5MTAxMzE0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
