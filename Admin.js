@@ -123,7 +123,6 @@ const state = {
   view: "dashboard",
   hydratingUserId: null,
   loadError: "",
-  recoveryMode: false,
   loginMessage: "",
   loginType: "error",
   uploadingKey: "",
@@ -136,20 +135,8 @@ const state = {
 const elements = {
   loginView: document.getElementById("login-view"),
   panelView: document.getElementById("panel-view"),
-  loginForm: document.getElementById("login-form"),
-  loginEmail: document.getElementById("login-email"),
-  loginPassword: document.getElementById("login-password"),
-  loginSubmit: document.getElementById("login-submit"),
   loginMessage: document.getElementById("login-message"),
-  loginMethods: document.getElementById("login-methods"),
   googleLogin: document.getElementById("google-login"),
-  recoveryView: document.getElementById("password-recovery-view"),
-  recoveryForm: document.getElementById("recovery-form"),
-  recoveryPassword: document.getElementById("recovery-password"),
-  recoveryPasswordConfirm: document.getElementById("recovery-password-confirm"),
-  recoverySubmit: document.getElementById("recovery-submit"),
-  recoveryMessage: document.getElementById("recovery-message"),
-  recoveryBack: document.getElementById("recovery-back"),
   cookieNoticeButton: document.getElementById("cookie-notice-button"),
   cookieNoticePanel: document.getElementById("cookie-notice-panel"),
   cookieNoticeClose: document.getElementById("cookie-notice-close"),
@@ -180,18 +167,16 @@ try { currentLanguage = localStorage.getItem("language") === "en" ? "en" : "id";
 function t(key) {
   const dictionary = currentLanguage === "en"
     ? {
-        emailPh: "BPK PENABUR email", passPh: "Password", submit: "Log in", forgot: "Lost password?",
-        oauth: "Log in using your account on:", close: "Close", cookieBtn: "Cookies notice",
+        oauth: "Sign in with your school Google account:", close: "Close", cookieBtn: "Cookies notice",
         cookieTitle: "Session notice",
         cookieText: "The admin panel keeps your Supabase sign-in saved in this browser and signs out when the browser is closed.",
-        save: "Save password", back: "Back to login"
+        loginHint: "Use the Google account of an admin or developer."
       }
     : {
-        emailPh: "Email BPK PENABUR", passPh: "Kata sandi", submit: "Masuk", forgot: "Lupa kata sandi?",
-        oauth: "Masuk menggunakan akun Anda:", close: "Tutup", cookieBtn: "Pemberitahuan cookie",
+        oauth: "Masuk dengan akun Google sekolah:", close: "Tutup", cookieBtn: "Pemberitahuan cookie",
         cookieTitle: "Pemberitahuan sesi",
         cookieText: "Panel ini menyimpan sesi login Supabase di browser dan otomatis keluar saat browser ditutup.",
-        save: "Simpan kata sandi", back: "Kembali ke login"
+        loginHint: "Gunakan akun Google milik admin atau developer."
       };
   return dictionary[key] || key;
 }
@@ -199,11 +184,8 @@ function t(key) {
 function applyLanguage() {
   document.documentElement.lang = currentLanguage;
   const pairs = [
-    ["login-email", "placeholder", t("emailPh")],
-    ["login-password", "placeholder", t("passPh")],
-    ["login-submit", "textContent", t("submit")],
-    ["forgot-password", "textContent", t("forgot")],
     ["oauth-heading", "textContent", t("oauth")],
+    ["login-hint", "textContent", t("loginHint")],
     ["cookie-notice-button", "textContent", t("cookieBtn")],
     ["cookie-notice-close", "textContent", t("close")],
     ["cookie-notice-title", "textContent", t("cookieTitle")],
@@ -383,8 +365,6 @@ function showLogin(message, type) {
   if (type) state.loginType = type;
   elements.loginView.hidden = false;
   elements.panelView.hidden = true;
-  elements.loginMethods.hidden = state.recoveryMode;
-  elements.recoveryView.hidden = !state.recoveryMode;
   renderLoginMessage();
 }
 
@@ -408,9 +388,6 @@ function showPanel() {
 }
 
 async function initialize() {
-  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
-  state.recoveryMode = new URLSearchParams(hash).get("type") === "recovery"
-    || new URLSearchParams(window.location.search).get("type") === "recovery";
   if (!isConfigured()) {
     showLogin("Konfigurasi Supabase belum lengkap pada file Admin.html.");
     return;
@@ -426,27 +403,17 @@ async function initialize() {
 
   const freshWindow = armSessionLock();
 
-  if (state.recoveryMode) showLogin("");
-
   state.client.auth.onAuthStateChange((event, session) => {
-    if (event === "PASSWORD_RECOVERY") {
-      state.recoveryMode = true;
-      state.loginMessage = "";
-      showLogin("");
-      window.setTimeout(() => elements.recoveryPassword.focus(), 0);
-      return;
-    }
     if (event === "SIGNED_OUT") {
       state.user = null;
       state.profile = null;
       state.role = "user";
       state.hydratingUserId = null;
-      state.recoveryMode = false;
       closeModal();
       showLogin();
       return;
     }
-    if (session && session.user && !state.profile && !state.hydratingUserId && !state.recoveryMode) {
+    if (session && session.user && !state.profile && !state.hydratingUserId) {
       window.setTimeout(() => hydrateUser(session.user), 0);
     }
   });
@@ -456,7 +423,6 @@ async function initialize() {
       console.error("Sesi tidak dapat dipulihkan:", error);
       return;
     }
-    if (state.recoveryMode) return;
     const session = data ? data.session : null;
     if (!session || !session.user) return;
     if (freshWindow) {
@@ -472,9 +438,14 @@ async function hydrateUser(user) {
   if (!user || state.profile || state.hydratingUserId === user.id) return;
   const email = String(user.email || "").trim().toLowerCase();
 
-  if (!isAllowedEmail(email) || !PANEL_EMAILS.includes(email)) {
+  if (!isAllowedEmail(email)) {
     await state.client.auth.signOut();
-    showLogin("Akun ini tidak bisa masuk ke panel admin. Gunakan akun pengelola yang terdaftar.");
+    showLogin("Pakai akun Google BPK PENABUR untuk masuk ke panel ya.");
+    return;
+  }
+  if (!PANEL_EMAILS.includes(email)) {
+    await state.client.auth.signOut();
+    showLogin("Akun ini bukan pengelola panel. Pakai akun admin atau developer.");
     return;
   }
 
@@ -522,73 +493,12 @@ async function hydrateUser(user) {
   }
 }
 
-async function handleLogin(event) {
-  event.preventDefault();
-  const email = elements.loginEmail.value.trim().toLowerCase();
-  const password = elements.loginPassword.value;
-
-  if (!isAllowedEmail(email)) {
-    showLogin("Pakai email BPK PENABUR untuk masuk ya.");
-    elements.loginEmail.focus();
-    return;
-  }
-  if (!PANEL_EMAILS.includes(email)) {
-    showLogin("Akun ini tidak bisa masuk ke panel admin.");
-    elements.loginEmail.focus();
-    return;
-  }
-  if (!password) {
-    showLogin("Isi kata sandimu dulu ya.");
-    elements.loginPassword.focus();
-    return;
-  }
-
-  const originalText = elements.loginSubmit.textContent;
-  elements.loginSubmit.disabled = true;
-  elements.loginSubmit.textContent = "Memeriksa…";
-  state.loginMessage = "";
-  try {
-    const { data, error } = await state.client.auth.signInWithPassword({ email, password });
-    if (error) {
-      const lower = String(error.message || "").toLowerCase();
-      showLogin(lower.includes("invalid") ? "Email atau kata sandinya salah." : friendlyError(error));
-      return;
-    }
-    if (data && data.user) await hydrateUser(data.user);
-  } catch (error) {
-    showLogin(friendlyError(error));
-  } finally {
-    elements.loginSubmit.disabled = false;
-    elements.loginSubmit.textContent = originalText;
-  }
-}
-
-async function handleForgotPassword() {
-  const email = elements.loginEmail.value.trim().toLowerCase();
-  if (!isAllowedEmail(email)) {
-    showLogin("Isi email BPK PENABUR yang benar dulu ya.");
-    elements.loginEmail.focus();
-    return;
-  }
-  const button = document.getElementById("forgot-password");
-  const originalText = button.textContent;
-  button.disabled = true;
-  button.textContent = "Mengirim…";
-  try {
-    const redirectTo = `${window.location.origin}${window.location.pathname}`;
-    const { error } = await state.client.auth.resetPasswordForEmail(email, { redirectTo });
-    if (error) throw error;
-    showLogin("Kalau emailnya terdaftar, kami akan mengirim cara atur ulang kata sandi ke email itu.", "success");
-  } catch (error) {
-    showLogin(friendlyError(error));
-  } finally {
-    button.disabled = false;
-    button.textContent = originalText;
-  }
-}
-
 async function handleGoogleLogin() {
   const button = elements.googleLogin;
+  if (!state.client) {
+    showLogin("Supabase belum tersambung, jadi login Google belum bisa dipakai.");
+    return;
+  }
   const originalText = button.innerHTML;
   button.disabled = true;
   button.innerHTML = "Membuka Google…";
@@ -601,66 +511,10 @@ async function handleGoogleLogin() {
     if (error) throw error;
   } catch (error) {
     console.error("Google OAuth gagal:", error);
-    showLogin("Google login belum tersedia untuk panel ini.");
+    showLogin("Login Google belum berhasil. Pastikan akun Google BPK PENABUR dan penyedia Google di Supabase sudah aktif.");
   } finally {
     button.disabled = false;
     button.innerHTML = originalText;
-  }
-}
-
-function showRecoveryMessage(text, type = "error") {
-  elements.recoveryMessage.textContent = text;
-  elements.recoveryMessage.hidden = !text;
-  elements.recoveryMessage.classList.toggle("is-success", type === "success");
-}
-
-async function handleRecoverySubmit(event) {
-  event.preventDefault();
-  if (!state.client) {
-    showRecoveryMessage("Supabase belum dikonfigurasi.");
-    return;
-  }
-  const password = elements.recoveryPassword.value;
-  const confirmation = elements.recoveryPasswordConfirm.value;
-  if (password.length < 8) {
-    showRecoveryMessage("Kata sandi baru minimal 8 karakter.");
-    elements.recoveryPassword.focus();
-    return;
-  }
-  if (password !== confirmation) {
-    showRecoveryMessage("Kata sandi dan ulangannya belum sama.");
-    elements.recoveryPasswordConfirm.focus();
-    return;
-  }
-
-  elements.recoverySubmit.disabled = true;
-  elements.recoverySubmit.textContent = "Menyimpan…";
-  showRecoveryMessage("");
-  try {
-    const { error } = await state.client.auth.updateUser({ password });
-    if (error) throw error;
-    state.loginMessage = "Kata sandi berhasil diganti. Silakan masuk lagi ya.";
-    state.loginType = "success";
-    elements.recoveryForm.reset();
-    const { error: signOutError } = await state.client.auth.signOut();
-    if (signOutError) {
-      state.recoveryMode = false;
-      showLogin(state.loginMessage, "success");
-    }
-  } catch (error) {
-    showRecoveryMessage(friendlyError(error));
-  } finally {
-    elements.recoverySubmit.disabled = false;
-    elements.recoverySubmit.textContent = "Simpan kata sandi";
-  }
-}
-
-async function returnFromRecovery() {
-  state.recoveryMode = false;
-  showLogin("");
-  if (state.client) {
-    const { error } = await state.client.auth.signOut();
-    if (error) console.warn("Sesi pemulihan tidak dapat ditutup:", error);
   }
 }
 
@@ -669,7 +523,6 @@ async function handleLogout() {
   setAlert("");
   try {
     await state.client.auth.signOut();
-    elements.loginPassword.value = "";
   } catch (error) {
     setAlert(friendlyError(error), "error");
   } finally {
@@ -3004,10 +2857,6 @@ window.addEventListener("beforeunload", (event) => {
   return event.returnValue;
 });
 
-elements.loginForm.addEventListener("submit", handleLogin);
-elements.recoveryForm.addEventListener("submit", handleRecoverySubmit);
-elements.recoveryBack.addEventListener("click", returnFromRecovery);
-document.getElementById("forgot-password").addEventListener("click", handleForgotPassword);
 elements.googleLogin.addEventListener("click", handleGoogleLogin);
 elements.cookieNoticeButton.addEventListener("click", () => setCookieNoticeOpen(elements.cookieNoticePanel.hidden));
 elements.cookieNoticeClose.addEventListener("click", () => setCookieNoticeOpen(false));
