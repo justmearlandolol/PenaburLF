@@ -1,8 +1,10 @@
 const SUPABASE_URL = "https://jnuzdskjvdttdyokajgt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpudXpkc2tqdmR0dGR5b2thamd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTY3NjQsImV4cCI6MjEwMjE5Mjc2NH0.6c1GiFeEkG9V47KDcTriQj6AsFaETaShSsOeSD1OERw";
 const ALLOWED_DOMAIN = "@bpkpenabur.sch.id";
+const EXTRA_ALLOWED_EMAILS = ["arlandomlbb@gmail.com"];
 const PANEL_URL = "Admin.html";
 const ANNOUNCEMENT_LIMIT = 3;
+const GALLERY_LIMIT = 8;
 const PANEL_ROLE_LABELS = { staff: "Petugas", moderator: "Moderator", admin: "Admin", developer: "Developer" };
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -161,6 +163,7 @@ function initialize() {
 
 function isAllowedEmail(value) {
   const email = String(value || "").trim().toLowerCase();
+  if (EXTRA_ALLOWED_EMAILS.includes(email)) return true;
   const parts = email.split("@");
   return parts.length === 2 && Boolean(parts[0]) && !/\s/.test(parts[0]) && `@${parts[1]}` === ALLOWED_DOMAIN;
 }
@@ -255,7 +258,7 @@ async function handleGoogleLogin() {
       provider: "google",
       options: {
         redirectTo,
-        queryParams: { hd: "bpkpenabur.sch.id", prompt: "select_account" }
+        queryParams: { prompt: "select_account" }
       }
     });
     if (error) throw error;
@@ -420,15 +423,57 @@ async function loadClaimStatus(itemId) {
   state.claimStatus = data || null;
 }
 
+function gallerySlides() {
+  const items = (state.foundItems || []).slice()
+    .sort((a, b) => new Date(b.found_at || b.created_at || 0).getTime() - new Date(a.found_at || a.created_at || 0).getTime())
+    .slice(0, GALLERY_LIMIT);
+  if (items.length) {
+    return items.map((item) => ({
+      id: item.id,
+      name: item.name || "Barang tanpa nama",
+      place: item.location_found || "Lokasi belum dicatat",
+      imageUrl: item.imageUrl || null
+    }));
+  }
+  return Array.from({ length: 4 }, () => ({ id: "", name: "Foto belum tersedia", place: "Menunggu barang temuan pertama", imageUrl: null }));
+}
+
+function galleryFrameMarkup(slide) {
+  const photo = renderImage(slide.imageUrl, `Foto ${slide.name}`, "gallery-photo");
+  if (photo) return `<span class="gallery-frame">${photo}</span>`;
+  return `<span class="gallery-frame is-empty"><span class="gallery-blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2"></rect><circle cx="8.6" cy="10" r="1.6"></circle><path d="m4 17.2 4.8-4.3 3.9 3.4 2.9-2.4 4.4 3.9"></path></svg></span></span>`;
+}
+
+function gallerySlideMarkup(slide, duplicate) {
+  const frame = galleryFrameMarkup(slide);
+  const caption = `<span class="gallery-caption"><strong>${escapeHtml(slide.name)}</strong><span>${escapeHtml(slide.place)}</span></span>`;
+  const extra = duplicate ? ' aria-hidden="true" tabindex="-1"' : "";
+  if (!slide.id) return `<span class="gallery-slide is-empty"${extra}>${frame}${caption}</span>`;
+  return `<button class="gallery-slide" type="button" data-action="open-item" data-id="${escapeAttribute(slide.id)}" aria-label="Lihat detail ${escapeAttribute(slide.name)}"${extra}>${frame}${caption}</button>`;
+}
+
+function renderItemGallery() {
+  const slides = gallerySlides();
+  const duration = Math.max(24, slides.length * 6);
+  const track = slides.map((slide) => gallerySlideMarkup(slide, false)).join("")
+    + slides.map((slide) => gallerySlideMarkup(slide, true)).join("");
+  return `
+    <section class="gallery-card" aria-labelledby="gallery-title">
+      <div class="gallery-head">
+        <h2 id="gallery-title">Galeri barang temuan</h2>
+        <p class="gallery-note">Daftar barang yang ditemukan.</p>
+      </div>
+      <div class="gallery-strip">
+        <div class="gallery-track" style="animation-duration: ${duration}s">${track}</div>
+      </div>
+    </section>`;
+}
+
 function renderFoundItemsPage() {
   elements.appContent.innerHTML = `
     <section aria-labelledby="found-page-title">
+      ${renderItemGallery()}
       ${renderAnnouncementList()}
-      <div class="page-heading">
-        <div>
-
-        </div>
-      </div>
       <div class="filter-bar" aria-label="Pencarian dan filter barang">
         <div class="filter-control">
           <label for="found-search">Cari barang</label>
