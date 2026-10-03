@@ -23,18 +23,8 @@
       <p class="login-panel-note">Panel pengelola Lost &amp; Found SMAK 7 PENABUR Jakarta.</p>
 
       <div id="login-methods">
-        <form id="login-form" class="login-form" novalidate aria-labelledby="login-title">
-          <label class="visually-hidden" for="login-email">Email akun BPK PENABUR</label>
-          <input id="login-email" class="login-input" name="email" type="email" autocomplete="username" placeholder="Email BPK PENABUR" required>
-          <label class="visually-hidden" for="login-password">Kata sandi</label>
-          <input id="login-password" class="login-input" name="password" type="password" autocomplete="current-password" placeholder="Kata sandi" required>
-          <div id="login-message" class="form-message" role="alert" aria-live="polite" hidden></div>
-          <button id="login-submit" class="login-submit" type="submit">Masuk</button>
-        </form>
-
-        <button id="forgot-password" class="login-text-link" type="button">Lupa kata sandi?</button>
-        <div class="login-divider" role="separator"></div>
-        <h2 id="oauth-heading" class="oauth-heading">Masuk menggunakan akun Anda:</h2>
+        <div id="login-message" class="form-message" role="alert" aria-live="polite" hidden></div>
+        <h2 id="oauth-heading" class="oauth-heading">Masuk dengan akun Google sekolah:</h2>
         <button id="google-login" class="google-login" type="button">
           <svg class="google-mark" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#4285F4" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12S17.4 12 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.3-.4-3.5z"/>
@@ -44,26 +34,13 @@
           </svg>
           <span>Google</span>
         </button>
+        <p id="login-hint" class="login-hint">Gunakan akun Google milik admin atau developer.</p>
 
         <div id="setup-notice" class="setup-notice" role="status" hidden>
           <strong>Konfigurasi diperlukan</strong>
           <span>Hubungkan project Supabase di <code>Admin.html</code> agar panel dapat digunakan.</span>
         </div>
       </div>
-
-      <section id="password-recovery-view" class="password-recovery-view" aria-labelledby="recovery-title" hidden>
-        <h2 id="recovery-title">Atur ulang kata sandi</h2>
-        <p class="recovery-copy">Buat kata sandi baru untuk akun pengelola Anda.</p>
-        <form id="recovery-form" class="login-form" novalidate>
-          <label class="visually-hidden" for="recovery-password">Kata sandi baru</label>
-          <input id="recovery-password" class="login-input" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="Kata sandi baru" required>
-          <label class="visually-hidden" for="recovery-password-confirm">Ulangi kata sandi</label>
-          <input id="recovery-password-confirm" class="login-input" name="password_confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Ulangi kata sandi" required>
-          <div id="recovery-message" class="form-message" role="alert" aria-live="polite" hidden></div>
-          <button id="recovery-submit" class="login-submit" type="submit">Simpan kata sandi</button>
-        </form>
-        <button id="recovery-back" class="login-text-link" type="button">Kembali ke login</button>
-      </section>
 
       <div id="cookie-notice-panel" class="cookie-notice-panel" role="dialog" aria-labelledby="cookie-notice-title" hidden>
         <h2 id="cookie-notice-title">Pemberitahuan sesi</h2>
@@ -125,4 +102,5 @@
   </div>
 
   <div id="panel-dialog-root"></div>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44a4be979b04080',t:'MTc5MTAxMzIwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
