@@ -1,6 +1,9 @@
 const SUPABASE_URL = "https://jnuzdskjvdttdyokajgt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpudXpkc2tqdmR0dGR5b2thamd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTY3NjQsImV4cCI6MjEwMjE5Mjc2NH0.6c1GiFeEkG9V47KDcTriQj6AsFaETaShSsOeSD1OERw";
 const ALLOWED_DOMAIN = "@bpkpenabur.sch.id";
+const PANEL_URL = "Admin.html";
+const ANNOUNCEMENT_LIMIT = 3;
+const PANEL_ROLE_LABELS = { staff: "Petugas", moderator: "Moderator", admin: "Admin", developer: "Developer" };
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const CATEGORY_OPTIONS = [
@@ -39,6 +42,8 @@ const state = {
   myReports: { found: [], lost: [], claims: [], claimItems: {} },
   adminTab: "found",
   adminData: { found: [], lost: [], claims: [], itemsById: {}, profilesById: {} },
+  announcements: [],
+  panelRole: "user",
   loginMessage: "",
   loginMessageType: "error",
   recoveryMode: false,
@@ -125,6 +130,8 @@ const elements = {
   accountEmail: document.getElementById("account-email"),
   logoutButton: document.getElementById("logout-button"),
   adminNav: document.getElementById("admin-navigation-link"),
+  accountBadge: document.getElementById("account-badge"),
+  panelLink: document.getElementById("panel-link"),
   nav: document.getElementById("main-navigation"),
   mobileMenu: document.getElementById("mobile-menu-toggle"),
   appContent: document.getElementById("app-content"),
@@ -172,6 +179,9 @@ function initialize() {
     if (event === "SIGNED_OUT") {
       state.user = null;
       state.profile = null;
+      state.panelRole = "user";
+      state.announcements = [];
+      applyPanelIdentity();
       state.foundItems = [];
       state.selectedItem = null;
       state.hydratingUserId = null;
@@ -262,7 +272,9 @@ async function hydrateUser(user) {
     const name = (profile.full_name || "").trim() || (user.email || "").split("@")[0];
     elements.accountName.textContent = name;
     elements.accountEmail.textContent = profile.email || user.email || "";
-    elements.adminNav.hidden = profile.role !== "admin";
+    state.panelRole = normalizePanelRole(profile.role);
+    applyPanelIdentity();
+    elements.adminNav.hidden = state.panelRole === "user";
     elements.loginView.hidden = true;
     elements.appView.hidden = false;
     await navigateTo("foundItems");
@@ -475,7 +487,7 @@ function setActiveNavigation(route) {
 
 async function navigateTo(route) {
   if (!state.profile || !state.user) return;
-  if (route === "admin" && state.profile.role !== "admin") route = "foundItems";
+  if (route === "admin" && state.panelRole === "user") route = "foundItems";
   const navigationToken = ++state.navigationToken;
   state.view = route;
   if (route !== "reportLost" && route !== "reportFound") state.reportSuccess = null;
@@ -494,6 +506,8 @@ async function navigateTo(route) {
     elements.appContent.innerHTML = loadingMarkup("Memuat barang ditemukan…");
     try {
       await loadFoundItems();
+      if (navigationToken !== state.navigationToken) return;
+      await loadAnnouncements();
       if (navigationToken !== state.navigationToken) return;
       renderFoundItemsPage();
     } catch (error) {
@@ -588,6 +602,7 @@ async function loadClaimStatus(itemId) {
 function renderFoundItemsPage() {
   elements.appContent.innerHTML = `
     <section aria-labelledby="found-page-title">
+      ${renderAnnouncementList()}
       <div class="page-heading">
         <div>
 
@@ -669,7 +684,6 @@ function renderFoundItemRow(item) {
       </div>
     </article>`;
 }
-
 function renderItemDetail() {
   const item = state.selectedItem;
   if (!item) return;
@@ -814,6 +828,50 @@ function renderClaimGroup(rows, claimItems) {
   return `<section class="report-section"><h2>Pengajuan claim <span>${rows.length} pengajuan</span></h2>${body}</section>`;
 }
 
+function normalizePanelRole(role) {
+  const value = String(role || "").toLowerCase();
+  return PANEL_ROLE_LABELS[value] ? value : "user";
+}
+
+function applyPanelIdentity() {
+  const role = normalizePanelRole(state.panelRole);
+  const label = PANEL_ROLE_LABELS[role] || "";
+  elements.accountBadge.hidden = !label;
+  elements.accountBadge.textContent = label;
+  elements.accountBadge.className = `role-badge role-${role}`;
+  elements.panelLink.hidden = role === "user";
+  elements.panelLink.href = PANEL_URL;
+}
+
+async function loadAnnouncements() {
+  try {
+    const { data, error } = await state.client
+      .from("announcements")
+      .select("id, title, body, level, published_at")
+      .eq("is_published", true)
+      .order("published_at", { ascending: false })
+      .limit(ANNOUNCEMENT_LIMIT);
+    if (error) throw error;
+    state.announcements = data || [];
+  } catch (error) {
+    state.announcements = [];
+    console.warn("Pengumuman tidak dapat dimuat:", error);
+  }
+}
+
+function renderAnnouncementList() {
+  const rows = state.announcements;
+  if (!rows.length) return "";
+  return `<div class="announcement-list">${rows.map((row) => `
+    <article class="announcement is-${escapeAttribute(row.level || "info")}">
+      <div class="announcement-head">
+        <h2>${escapeHtml(row.title || "Pengumuman")}</h2>
+        <span class="announcement-date">${escapeHtml(formatDate(row.published_at))}</span>
+      </div>
+      ${row.body ? `<p>${escapeHtml(row.body)}</p>` : ""}
+    </article>`).join("")}</div>`;
+}
+
 async function loadAdminData() {
   const [foundResult, lostResult, claimResult] = await Promise.all([
     state.client.from("found_items").select("*").order("created_at", { ascending: false }),
@@ -851,7 +909,7 @@ async function loadAdminData() {
 }
 
 function renderAdminPage() {
-  if (!state.profile || state.profile.role !== "admin") {
+  if (!state.profile || state.panelRole === "user") {
     elements.appContent.innerHTML = errorMarkup("Akses admin tidak tersedia.", "Halaman ini hanya dapat dibuka oleh petugas yang ditetapkan sebagai admin.");
     return;
   }
