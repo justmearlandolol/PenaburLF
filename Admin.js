@@ -80,15 +80,15 @@ const TICKET_CATEGORIES = ["Percakapan tidak sopan", "Laporan palsu", "Konten ti
 const TICKET_STATUSES = ["terbuka", "ditinjau", "selesai"];
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "\u2302 Beranda", min: "staff" },
-  { key: "lost", label: "\uD83D\uDD0D Barang Hilang", min: "moderator" },
-  { key: "found", label: "\uD83C\uDF92 Barang Ditemukan", min: "staff" },
-  { key: "matches", label: "\uD83D\uDD17 Cocokkan Barang", min: "moderator" },
-  { key: "claims", label: "\uD83E\uDD1D Klaim & Pengambilan", min: "staff" },
-  { key: "users", label: "\uD83D\uDC65 Pengguna", min: "admin" },
-  { key: "announcements", label: "\uD83D\uDCE2 Pengumuman", min: "admin" },
-  { key: "communication", label: "\u2709 Pesan & Masalah", min: "moderator" },
-  { key: "audit", label: "\uD83D\uDCDD Catatan Aktivitas", min: "admin" }
+  { key: "dashboard", label: "Beranda", icon: "home", min: "staff" },
+  { key: "lost", label: "Barang Hilang", icon: "search", min: "moderator" },
+  { key: "found", label: "Barang Ditemukan", icon: "bag", min: "staff" },
+  { key: "matches", label: "Cocokkan Barang", icon: "link", min: "moderator" },
+  { key: "claims", label: "Klaim & Pengambilan", icon: "box", min: "staff" },
+  { key: "users", label: "Pengguna", icon: "users", min: "admin" },
+  { key: "announcements", label: "Pengumuman", icon: "megaphone", min: "admin" },
+  { key: "communication", label: "Pesan & Masalah", icon: "mail", min: "moderator" },
+  { key: "audit", label: "Catatan Aktivitas", icon: "clipboard", min: "admin" }
 ];
 
 const SOURCES = [
@@ -227,6 +227,29 @@ function escapeAttribute(value) {
   return escapeHtml(value);
 }
 
+const ICONS = {
+  home: '<path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-5H9v5H5a1 1 0 0 1-1-1z"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  bag: '<path d="M6 9.5a6 6 0 0 1 12 0V19a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M9 9.5V7a3 3 0 0 1 6 0v2.5"/><path d="M9.5 14h5"/>',
+  link: '<path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.3-2.3a4 4 0 0 0-5.7-5.7l-1.3 1.3"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.3 2.3a4 4 0 0 0 5.7 5.7l1.3-1.3"/>',
+  box: '<path d="M12 3.2 4.5 7v10L12 20.8 19.5 17V7z"/><path d="M4.5 7 12 10.8 19.5 7"/><path d="M12 10.8V20.8"/><path d="m9.3 15.4 1.9 1.9 3.5-3.5"/>',
+  users: '<path d="M8.5 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/><path d="M2.8 20a5.7 5.7 0 0 1 11.4 0"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.9"/><path d="M15.6 14.5A5.7 5.7 0 0 1 21.2 20"/>',
+  megaphone: '<path d="M4.5 10.2v3.6a1 1 0 0 0 1 1h1.8l6 4V5.2l-6 4H5.5a1 1 0 0 0-1 1z"/><path d="M17 9.2a3 3 0 0 1 0 5.6"/><path d="M19.4 6.6a6.4 6.4 0 0 1 0 10.8"/>',
+  mail: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m4.5 7.5 7.5 5.6 7.5-5.6"/>',
+  clipboard: '<path d="M9 4.6H8a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6.6a2 2 0 0 0-2-2h-1"/><rect x="9" y="3" width="6" height="3.2" rx="1"/><path d="M9.5 11.6h5"/><path d="M9.5 15.6h3.4"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11.2v5"/><path d="M12 7.9h.01"/>',
+  camera: '<path d="M4 8.6h3l1.5-2h7l1.5 2h3a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.6a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.6" r="3.4"/>',
+  image: '<rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.6" cy="10" r="1.6"/><path d="m4 17.2 4.8-4.3 3.9 3.4 2.9-2.4 4.4 3.9"/>',
+  swap: '<path d="M4 8.5h13.5l-3-3"/><path d="M20 15.5H6.5l3 3"/>'
+};
+
+function icon(name, className) {
+  const path = ICONS[name];
+  if (!path) return "";
+  const classAttribute = className ? ` class="${className}"` : ' class="icon"';
+  return `<svg${classAttribute} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${path}</svg>`;
+}
+
 function isAllowedEmail(value) {
   const email = String(value || "").trim().toLowerCase();
   const parts = email.split("@");
@@ -341,7 +364,7 @@ function emptyMarkup(title, description) {
 }
 
 function helperNote(text) {
-  return `<p class="helper-note"><span aria-hidden="true">\u2139\uFE0F</span> ${text}</p>`;
+  return `<p class="helper-note">${icon("info")}<span>${text}</span></p>`;
 }
 
 function armSessionLock() {
@@ -735,7 +758,7 @@ function renderPanelShell() {
   if (!availableNav().some((item) => item.key === state.view)) state.view = "dashboard";
   elements.nav.innerHTML = availableNav().map((item) => `
     <button class="panel-navlink${state.view === item.key ? " is-active" : ""}" type="button" role="tab"
-      aria-selected="${state.view === item.key}" data-action="go-view" data-view="${item.key}">${escapeHtml(item.label)}</button>`).join("");
+      aria-selected="${state.view === item.key}" data-action="go-view" data-view="${item.key}">${icon(item.icon)}<span>${escapeHtml(item.label)}</span></button>`).join("");
 }
 
 function renderView() {
@@ -848,7 +871,7 @@ function imageBlock(row, meta) {
   const label = hasImage ? "Ganti gambar" : "Upload gambar";
   const preview = hasImage
     ? (row.imageUrl ? renderImage(row.imageUrl, `Gambar ${row.name || "barang"}`, "") : `<div class="photo-placeholder">Gambar tidak bisa dibuka</div>`)
-    : `<div class="photo-placeholder"><span class="photo-icon" aria-hidden="true">\uD83D\uDDBC\uFE0F</span><span>Belum ada gambar</span></div>`;
+    : `<div class="photo-placeholder">${icon("image", "icon-lg")}<span>Belum ada gambar</span></div>`;
   const deleteButton = hasImage
     ? `<button class="button button-danger button-small" type="button" data-action="delete-image" data-id="${escapeAttribute(row.id)}" data-meta="${meta}">Hapus gambar</button>`
     : "";
@@ -858,7 +881,7 @@ function imageBlock(row, meta) {
       <div class="photo-actions">
         <label class="upload-control${busy ? " is-busy" : ""}">
           <input type="file" accept="image/jpeg,image/png,image/webp" data-action="upload-image" data-id="${escapeAttribute(row.id)}" data-meta="${meta}">
-          <span class="button button-primary button-small">${busy ? "Mengunggah…" : `\uD83D\uDCF7 ${label}`}</span>
+          <span class="button button-primary button-small">${busy ? "Mengunggah…" : `${icon("camera")}<span>${escapeHtml(label)}</span>`}</span>
         </label>
         ${deleteButton}
         <p class="photo-hint">Pilih file JPG, PNG, atau WebP. Ukuran maksimal 5 MB.</p>
@@ -933,28 +956,7 @@ VIEWS.dashboard = {
     const maxCategory = topCategories.length ? topCategories[0][1] : 0;
 
     const activity = state.data.audit.slice(0, 6);
-    const steps = [
-      ["Barang Ditemukan", "Lihat barang yang ditemukan orang lain. Periksa gambarnya, lalu setujui atau tolak.", "found"],
-      ["Barang Hilang", "Lihat laporan kehilangan dari siswa. Cocokkan dengan barang temuan.", "lost"],
-      ["Cocokkan Barang", "Sistem mencarikan pasangan barang hilang dan barang temuan. Kamu tinggal menilai benar atau tidak.", "matches"],
-      ["Klaim & Pengambilan", "Periksa bukti kepemilikan, lalu catat saat barang diserahkan ke pemiliknya.", "claims"]
-    ];
-
     return `
-      <section class="card help-card">
-        <h2>Ada 4 hal utama yang bisa kamu kerjakan</h2>
-        <ol class="step-list">
-          ${steps.map(([title, text, view]) => `
-            <li>
-              <div>
-                <strong>${escapeHtml(title)}</strong>
-                <span>${escapeHtml(text)}</span>
-              </div>
-              <button class="button button-secondary button-small" type="button" data-action="go-view" data-view="${view}">Buka</button>
-            </li>`).join("")}
-        </ol>
-      </section>
-
       <div class="stat-grid">
         ${statCard("Barang hilang bulan ini", lostThisMonth, `Semua laporan hilang: ${lost.length}`)}
         ${statCard("Barang ditemukan bulan ini", foundThisMonth, `Semua barang temuan: ${found.length}`)}
@@ -1312,7 +1314,7 @@ function similarityScore(found, lost) {
     score += 8;
   } else if (days <= 1) {
     score += 15;
-    reasons.push("waktunya dekat (≤ 1 hari)");
+    reasons.push("waktunya dekat (1 hari atau kurang)");
   } else if (days <= 3) {
     score += 12;
     reasons.push(`selisih ${Math.round(days)} hari`);
@@ -1358,12 +1360,12 @@ function matchCard(entry) {
     <div class="record-main">
       <div class="match-pair">
         <div class="match-side">
-          <h4>🔍 Yang hilang: ${escapeHtml(entry.lost.name || "Tanpa nama")}</h4>
+          <h4>${icon("search")}<span>Yang hilang: ${escapeHtml(entry.lost.name || "Tanpa nama")}</span></h4>
           <p>${escapeHtml(entry.lost.category || "Tanpa kategori")} · ${escapeHtml(entry.lost.last_seen_location || "lokasi belum diisi")} · ${escapeHtml(formatDate(entry.lost.lost_at || entry.lost.created_at))}</p>
         </div>
-        <div class="match-arrow" aria-hidden="true">↔</div>
+        <div class="match-arrow">${icon("swap", "icon-lg")}</div>
         <div class="match-side">
-          <h4>🎒 Yang ditemukan: ${escapeHtml(entry.found.name || "Tanpa nama")}</h4>
+          <h4>${icon("bag")}<span>Yang ditemukan: ${escapeHtml(entry.found.name || "Tanpa nama")}</span></h4>
           <p>${escapeHtml(entry.found.category || "Tanpa kategori")} · ${escapeHtml(entry.found.location_found || "lokasi belum diisi")} · ${escapeHtml(formatDate(entry.found.found_at || entry.found.created_at))}</p>
         </div>
       </div>
@@ -1389,7 +1391,7 @@ function savedMatchCard(row) {
   const reviewer = state.maps.profiles[row.reviewed_by];
   return `<article class="record">
     <div class="record-main">
-      <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(lost ? lost.name : "Laporan hilang")} ↔ ${escapeHtml(found ? found.name : "Barang temuan")}</h3></div>
+      <div class="record-title">${statusBadge(row.status)}<h3>${escapeHtml(lost ? lost.name : "Laporan hilang")}${icon("swap")}${escapeHtml(found ? found.name : "Barang temuan")}</h3></div>
       <div class="record-meta">
         <span class="score-badge ${scoreClass(row.score)}">Mirip ${row.score}%</span>
         <span>${row.method === "manual" ? "Dicocokkan manual" : "Dari saran sistem"}</span>
