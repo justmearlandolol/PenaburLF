@@ -43,7 +43,7 @@ a { color: var(--navy); }
 .login-view { min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 19px 16px; background: linear-gradient(90deg, #fafbfc 0%, #f3f4f6 45%, #dde1e6 100%); }
 .login-wrap { position: relative; width: 100%; max-width: 563px; padding: 61px 54px 54px; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0, 0, 0, .12); }
 .login-logo-wrap { height: 210px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-.login-logo { display: block; width: 168px; height: 206px; object-fit: contain; }
+.login-logo { display: block; width: 250px; height: 256px; object-fit: contain; }
 .login-panel-note { margin: 0 0 16px; color: var(--muted); font-size: 13px; text-align: center; }
 .login-form { display: grid; gap: 18px; }
 .login-input { width: 100%; min-height: 52px; padding: 10px 19px; color: #212529; background: #fff; border: 1px solid #8f959e; border-radius: 11px; outline: none; font-size: 19px; line-height: 1.35; transition: border-color .15s ease, box-shadow .15s ease; }
