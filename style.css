@@ -60,11 +60,11 @@ a { color: var(--navy); }
 .login-view { min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 19px 16px; background: linear-gradient(90deg, #fafbfc 0%, #f3f4f6 45%, #dde1e6 100%); }
 .login-wrap { position: relative; width: 100%; max-width: 563px; padding: 61px 54px 54px; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0, 0, 0, .12); }
 .login-logo-wrap { height: 210px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-.login-logo { display: block; width: 250px; height: 260px; object-fit: contain; }
+.login-logo { display: block; width: 168px; height: 206px; object-fit: contain; }
 .login-hint { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .oauth-heading { margin: 0 0 8px; color: #1d2125; font-size: 24px; line-height: 1.3; font-weight: 700; }
 .google-login { width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 14px; color: #1d2125; background: #fff; border: 1px solid #dee2e6; border-radius: 6px; cursor: pointer; font-size: 16px; }
-.google-login:hover:not(:disabled) { background : #f7f9fc; border-color: #9eaec2; }
+.google-login:hover:not(:disabled) { background: #f8f9fa; }
 .google-login:disabled { cursor: wait; opacity: .65; }
 .google-mark { width: 20px; height: 20px; flex: 0 0 20px; }
 .google-login:focus-visible, .cookie-notice-button:focus-visible { outline: 3px solid rgba(20, 114, 196, .35); outline-offset: 2px; }
@@ -348,3 +348,35 @@ a { color: var(--navy); }
 @media (max-width: 620px) {
   .panel-link { padding: 6px 9px; font-size: 11px; }
 }
+.gallery-card { margin-bottom: 18px; padding: 16px 0 14px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 1px 3px rgba(16, 28, 46, .06); }
+.gallery-head { padding: 0 18px 13px; }
+.gallery-head h2 { margin: 0; color: var(--navy-deep); font-size: 17px; }
+.gallery-note { margin: 5px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.gallery-strip { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%); }
+.gallery-track { display: flex; width: max-content; padding: 4px 0 6px; animation: galleryFlow 42s linear infinite; }
+.gallery-strip:hover .gallery-track, .gallery-strip:focus-within .gallery-track { animation-play-state: paused; }
+.gallery-slide { display: block; width: 168px; margin-right: 14px; padding: 9px; color: inherit; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 1px 3px rgba(16, 28, 46, .05); font: inherit; text-align: left; }
+button.gallery-slide { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+button.gallery-slide:hover { border-color: var(--line-dark); box-shadow: 0 8px 18px rgba(16, 28, 46, .14); transform: translateY(-2px); }
+button.gallery-slide:focus-visible { outline: 3px solid rgba(33, 59, 107, .3); outline-offset: 2px; }
+.gallery-slide.is-empty { box-shadow: none; }
+.gallery-frame { position: relative; display: flex; align-items: center; justify-content: center; width: 148px; height: 132px; overflow: hidden; padding: 7px; background: #fff; border: 1px solid var(--line-dark); border-radius: 3px; }
+.gallery-frame::after { position: absolute; inset: 5px; border: 1px solid rgba(33, 59, 107, .14); content: ""; pointer-events: none; }
+.gallery-frame.is-empty { padding: 0; background: linear-gradient(135deg, #eef1f5 0%, #dbe1e8 100%); }
+.gallery-photo { display: block; width: 100%; height: 100%; object-fit: cover; }
+.gallery-blank { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #9fabbb; }
+.gallery-blank svg { width: 34px; height: 34px; }
+.gallery-caption { display: block; margin-top: 9px; }
+.gallery-caption strong { display: block; color: var(--ink); font-size: 13px; line-height: 1.35; }
+.gallery-caption span { display: block; margin-top: 3px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.gallery-slide.is-empty .gallery-caption strong { color: var(--muted); }
+@keyframes galleryFlow { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (max-width: 640px) {
+  .gallery-head { padding: 0 14px 11px; }
+  .gallery-slide { width: 142px; }
+  .gallery-frame { width: 124px; height: 112px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-track { animation: none; }
+}
+
