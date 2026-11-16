@@ -20,7 +20,7 @@
         <img class="login-logo" src="Logo.jpeg" alt="Logo BPK PENABUR" width="168" height="206">
       </div>
       <h1 id="login-title" class="visually-hidden">Panel Admin Lost &amp; Found</h1>
-      <p class="login-panel-note">Admin & Developer ONLY.</p>
+      <p class="login-panel-note">Admin &amp; Developer ONLY (BPK PENABUR).</p>
 
       <div id="login-methods">
         <div id="login-message" class="form-message" role="alert" aria-live="polite" hidden></div>
@@ -34,7 +34,7 @@
           </svg>
           <span>Google</span>
         </button>
-        <p id="login-hint" class="login-hint">Gunakan akun Google milik admin atau developer.</p>
+        <p id="login-hint" class="login-hint">Gunakan akun Google BPK PENABUR milik admin atau developer.</p>
 
         <div id="setup-notice" class="setup-notice" role="status" hidden>
           <strong>Konfigurasi diperlukan</strong>
@@ -75,12 +75,17 @@
 
           <div class="panel-account">
             <span id="panel-account-role" class="role-badge">Admin</span>
-            <div class="panel-account-copy">
-              <span id="panel-account-name" class="panel-account-name"></span>
-              <span id="panel-account-email" class="panel-account-email"></span>
-            </div>
             <a class="panel-link" href="index.html">Halaman pengguna</a>
-            <button id="panel-logout" class="button button-quiet button-small" type="button">Keluar</button>
+            <button id="panel-settings-button" class="account-trigger" type="button" aria-label="Buka pengaturan akun" title="Pengaturan akun">
+              <span class="panel-account-copy">
+                <span id="panel-account-name" class="panel-account-name"></span>
+                <span id="panel-account-email" class="panel-account-email"></span>
+              </span>
+              <span class="account-avatar">
+                <img id="panel-avatar-img" class="account-avatar-img" alt="" referrerpolicy="no-referrer" hidden>
+                <span id="panel-avatar-fallback" class="account-avatar-fallback" aria-hidden="true"></span>
+              </span>
+            </button>
           </div>
         </div>
 
@@ -102,5 +107,5 @@
   </div>
 
   <div id="panel-dialog-root"></div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44a4be979b04080',t:'MTc5MTAxMzIwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
