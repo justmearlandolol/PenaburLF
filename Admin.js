@@ -95,7 +95,7 @@ const SOURCES = [
   { key: "found", table: "found_items", columns: "*", limit: 400 },
   { key: "lost", table: "lost_reports", columns: "*", limit: 400 },
   { key: "claims", table: "claims", columns: "*", limit: 400 },
-  { key: "profiles", table: "profiles", columns: "id, full_name, email, role, blocked, blocked_reason, blocked_at, last_seen_at, created_at", limit: 400 },
+  { key: "profiles", table: "profiles", columns: "id, full_name, email, avatar_url, role, blocked, blocked_reason, blocked_at, last_seen_at, created_at", limit: 400 },
   { key: "matches", table: "item_matches", columns: "*", limit: 300 },
   { key: "announcements", table: "announcements", columns: "*", limit: 100 },
   { key: "handovers", table: "handover_records", columns: "*", limit: 200 },
@@ -119,6 +119,7 @@ const state = {
   client: null,
   user: null,
   profile: null,
+  hasAvatarColumn: true,
   role: "user",
   view: "dashboard",
   hydratingUserId: null,
@@ -126,6 +127,7 @@ const state = {
   loginMessage: "",
   loginType: "error",
   uploadingKey: "",
+  settingsDraft: { blob: null, previewUrl: "", resetToGoogle: false },
   data: { found: [], lost: [], claims: [], profiles: [], matches: [], announcements: [], handovers: [], tickets: [], notifications: [], history: [], audit: [] },
   maps: { profiles: {}, found: {}, lost: {}, claims: {} },
   filters: JSON.parse(JSON.stringify(DEFAULT_FILTERS)),
@@ -141,10 +143,12 @@ const elements = {
   cookieNoticePanel: document.getElementById("cookie-notice-panel"),
   cookieNoticeClose: document.getElementById("cookie-notice-close"),
   setupNotice: document.getElementById("setup-notice"),
+  settingsButton: document.getElementById("panel-settings-button"),
   accountName: document.getElementById("panel-account-name"),
   accountEmail: document.getElementById("panel-account-email"),
   accountRole: document.getElementById("panel-account-role"),
-  logoutButton: document.getElementById("panel-logout"),
+  accountAvatarImg: document.getElementById("panel-avatar-img"),
+  accountAvatarFallback: document.getElementById("panel-avatar-fallback"),
   nav: document.getElementById("panel-nav"),
   viewHost: document.getElementById("panel-view-host"),
   alert: document.getElementById("panel-alert"),
@@ -387,6 +391,117 @@ function showPanel() {
   elements.panelView.hidden = false;
 }
 
+function isSafeAvatarUrl(value) {
+  if (!value) return false;
+  const trimmed = String(value).trim();
+  if (/^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=\s]+$/i.test(trimmed)) return true;
+  return isSafeImageUrl(trimmed);
+}
+
+function localAvatarKey(userId) {
+  return `lf-avatar:${userId}`;
+}
+
+function getLocalAvatar(userId) {
+  if (!userId) return "";
+  try {
+    const stored = localStorage.getItem(localAvatarKey(userId)) || "";
+    return isSafeAvatarUrl(stored) ? stored : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function setLocalAvatar(userId, value) {
+  if (!userId) return;
+  try {
+    if (value) localStorage.setItem(localAvatarKey(userId), value);
+    else localStorage.removeItem(localAvatarKey(userId));
+  } catch (error) {}
+}
+
+function getGoogleAvatarUrl(user) {
+  if (!user) return "";
+  const meta = user.user_metadata || {};
+  const candidates = [meta.avatar_url, meta.picture];
+  const identities = Array.isArray(user.identities) ? user.identities : [];
+  identities.forEach((identity) => {
+    const data = (identity && identity.identity_data) || {};
+    candidates.push(data.avatar_url, data.picture);
+  });
+  for (const candidate of candidates) {
+    if (candidate && isSafeImageUrl(candidate)) return candidate;
+  }
+  return "";
+}
+
+function resolveUserAvatar(user, profile) {
+  if (profile && profile.avatar_url && isSafeAvatarUrl(profile.avatar_url)) return profile.avatar_url;
+  const cached = user ? getLocalAvatar(user.id) : "";
+  if (cached) return cached;
+  const meta = (user && user.user_metadata) || {};
+  if (meta.custom_avatar_url && isSafeAvatarUrl(meta.custom_avatar_url)) return meta.custom_avatar_url;
+  return getGoogleAvatarUrl(user);
+}
+
+function getInitials(name, email) {
+  const source = String(name || "").trim() || String(email || "").split("@")[0] || "A";
+  const parts = source.split(/[\s._-]+/).filter(Boolean);
+  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  return source.slice(0, 2).toUpperCase();
+}
+
+function renderPanelAccountIdentity() {
+  if (!state.user || !state.profile) {
+    elements.accountName.textContent = "";
+    elements.accountEmail.textContent = "";
+    elements.accountAvatarImg.removeAttribute("src");
+    elements.accountAvatarImg.hidden = true;
+    elements.accountAvatarFallback.hidden = false;
+    elements.accountAvatarFallback.textContent = "";
+    return;
+  }
+  const email = state.profile.email || state.user.email || "";
+  const name = (state.profile.full_name || "").trim() || email.split("@")[0];
+  const avatarUrl = resolveUserAvatar(state.user, state.profile);
+  const initials = getInitials(name, email);
+
+  elements.accountName.textContent = name;
+  elements.accountEmail.textContent = email;
+  elements.accountRole.textContent = ROLE_LABELS[state.role];
+  elements.accountRole.className = `role-badge role-${state.role}`;
+  elements.accountAvatarFallback.textContent = initials;
+
+  if (avatarUrl) {
+    elements.accountAvatarImg.src = avatarUrl;
+    elements.accountAvatarImg.hidden = false;
+    elements.accountAvatarFallback.hidden = true;
+  } else {
+    elements.accountAvatarImg.removeAttribute("src");
+    elements.accountAvatarImg.hidden = true;
+    elements.accountAvatarFallback.hidden = false;
+  }
+}
+
+async function fetchOwnAdminProfile(userId) {
+  const attempts = [
+    { cols: "id, full_name, email, avatar_url, role, blocked", hasAvatar: true },
+    { cols: "id, full_name, email, avatar_url, role", hasAvatar: true },
+    { cols: "id, full_name, email, role, blocked", hasAvatar: false },
+    { cols: "id, full_name, email, role", hasAvatar: false }
+  ];
+  let lastResult = null;
+  for (const attempt of attempts) {
+    const result = await state.client.from("profiles").select(attempt.cols).eq("id", userId).maybeSingle();
+    lastResult = result;
+    if (!result.error) {
+      state.hasAvatarColumn = attempt.hasAvatar;
+      return result;
+    }
+  }
+  return lastResult;
+}
+
 async function initialize() {
   if (!isConfigured()) {
     showLogin("Konfigurasi Supabase belum lengkap pada file Admin.html.");
@@ -409,6 +524,7 @@ async function initialize() {
       state.profile = null;
       state.role = "user";
       state.hydratingUserId = null;
+      renderPanelAccountIdentity();
       closeModal();
       showLogin();
       return;
@@ -440,27 +556,18 @@ async function hydrateUser(user) {
 
   if (!isAllowedEmail(email)) {
     await state.client.auth.signOut();
-    showLogin("Pakai akun Google BPK PENABUR untuk masuk ke panel ya.");
-    return;
-  }
-  if (!PANEL_EMAILS.includes(email)) {
-    await state.client.auth.signOut();
-    showLogin("Akun ini bukan pengelola panel. Pakai akun admin atau developer.");
+    showLogin("Pakai akun Google BPK PENABUR untuk masuk ke panel admin ya.");
     return;
   }
 
   state.hydratingUserId = user.id;
   try {
-    const { data: profile, error } = await state.client
-      .from("profiles")
-      .select("id, full_name, email, role, blocked")
-      .eq("id", user.id)
-      .maybeSingle();
+    const { data: profile, error } = await fetchOwnAdminProfile(user.id);
 
     if (error || !profile) {
       console.error("Profil tidak ditemukan:", error);
       await state.client.auth.signOut();
-      showLogin("Profil akun belum ada. Pastikan file supabase_admin_panel.sql sudah dijalankan.");
+      showLogin("Profil akun belum ada. Pastikan file sql.txt terbaru sudah dijalankan di Supabase SQL Editor.");
       return;
     }
     if (profile.blocked) {
@@ -469,21 +576,29 @@ async function hydrateUser(user) {
       return;
     }
 
+    const normalizedRole = normalizeRole(profile.role);
+    if (!PANEL_EMAILS.includes(email) && !atLeast(normalizedRole, "staff")) {
+      await state.client.auth.signOut();
+      showLogin("Akun ini bukan pengelola panel. Pakai akun admin atau developer BPK PENABUR.");
+      return;
+    }
+
+    const googleAvatar = getGoogleAvatarUrl(user);
+    if (state.hasAvatarColumn && !profile.avatar_url && !getLocalAvatar(user.id) && googleAvatar) {
+      profile.avatar_url = googleAvatar;
+      state.client.from("profiles").update({ avatar_url: googleAvatar }).eq("id", user.id).then(() => {});
+    }
+
     state.user = user;
     state.profile = profile;
-    state.role = normalizeRole(profile.role);
+    state.role = normalizedRole;
     state.loginMessage = "";
-
-    const name = (profile.full_name || "").trim() || email.split("@")[0];
-    elements.accountName.textContent = name;
-    elements.accountEmail.textContent = profile.email || email;
-    elements.accountRole.textContent = ROLE_LABELS[state.role];
-    elements.accountRole.className = `role-badge role-${state.role}`;
+    renderPanelAccountIdentity();
 
     showPanel();
     await refreshAll();
     renderView();
-    if (state.role === "user") setAlert("Jabatan akun pengelola ini belum tercatat di database. Jalankan file supabase_admin_panel.sql di Supabase SQL Editor.", "error");
+    if (state.role === "user") setAlert("Jabatan akun pengelola ini belum tercatat di database. Atur role admin di Supabase SQL Editor.", "error");
   } catch (error) {
     console.error("Profil tidak dapat dimuat:", error);
     await state.client.auth.signOut();
@@ -519,21 +634,23 @@ async function handleGoogleLogin() {
 }
 
 async function handleLogout() {
-  elements.logoutButton.disabled = true;
   setAlert("");
   try {
+    closeModal();
     await state.client.auth.signOut();
   } catch (error) {
     setAlert(friendlyError(error), "error");
-  } finally {
-    elements.logoutButton.disabled = false;
   }
 }
 
 async function refreshAll() {
-  const results = await Promise.all(SOURCES.map((source) =>
-    state.client.from(source.table).select(source.columns).order("created_at", { ascending: false }).limit(source.limit)
-  ));
+  const results = await Promise.all(SOURCES.map(async (source) => {
+    const primary = await state.client.from(source.table).select(source.columns).order("created_at", { ascending: false }).limit(source.limit);
+    if (!primary.error || source.key !== "profiles") return primary;
+    const fallbackWithAvatar = await state.client.from("profiles").select("id, full_name, email, avatar_url, role, created_at").order("created_at", { ascending: false }).limit(source.limit);
+    if (!fallbackWithAvatar.error) return fallbackWithAvatar;
+    return state.client.from("profiles").select("id, full_name, email, role, created_at").order("created_at", { ascending: false }).limit(source.limit);
+  }));
 
   const failed = [];
   results.forEach((result, index) => {
@@ -1428,13 +1545,21 @@ VIEWS.users = {
         }
         if (canManage) actions.push(actionButton("Kirim pesan", "notify-user", row.id));
         actions.push(actionButton("Lihat riwayat", "user-history", row.id));
+        const isPenaburAccount = isAllowedEmail(row.email);
+        const rowAvatar = row.avatar_url && isSafeAvatarUrl(row.avatar_url) ? row.avatar_url : "";
+        const rowInitials = getInitials(row.full_name, row.email);
         return `<tr>
           <td>
-            <span class="cell-name">${escapeHtml(row.full_name || "(tanpa nama)")}${isSelf ? " · kamu" : ""}</span><br>
-            <span style="color:var(--muted);font-size:11.5px">${escapeHtml(row.email || "")}</span>
-            ${row.blocked && row.blocked_reason ? `<br><span style="color:var(--danger);font-size:11.5px">Alasan diblokir: ${escapeHtml(row.blocked_reason)}</span>` : ""}
+            <div class="user-cell">
+              <span class="user-cell-avatar">${rowAvatar ? `<img src="${escapeAttribute(rowAvatar)}" alt="" referrerpolicy="no-referrer">` : escapeHtml(rowInitials)}</span>
+              <div>
+                <span class="cell-name">${escapeHtml(row.full_name || "(tanpa nama)")}${isSelf ? " · kamu" : ""}</span><br>
+                <span style="color:var(--muted);font-size:11.5px">${escapeHtml(row.email || "")}</span>
+                ${row.blocked && row.blocked_reason ? `<br><span style="color:var(--danger);font-size:11.5px">Alasan diblokir: ${escapeHtml(row.blocked_reason)}</span>` : ""}
+              </div>
+            </div>
           </td>
-          <td>${canManage && !isSelf && !privileged
+          <td>${canManage && !isSelf && !privileged && isPenaburAccount
             ? `<select class="inline-select" data-action="change-role" data-id="${escapeAttribute(row.id)}">
                  ${formatSelectOptions([["user", ROLE_LABELS.user], ["staff", ROLE_LABELS.staff], ["moderator", ROLE_LABELS.moderator]], normalizeRole(row.role))}
                </select>`
@@ -2753,12 +2878,288 @@ const ACTIONS = {
     }
   },
   "user-history": (button) => openUserHistoryModal(button.dataset.id),
+  "reset-google-avatar": () => handleSettingsResetAvatar(),
+  "logout-from-settings": () => handleLogout(),
   export: (button, event) => {
     event.stopPropagation();
     exportCsv(button.dataset.scope);
   },
   "close-modal": () => closeModal()
 };
+
+async function prepareAvatarFile(file) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error("File harus JPG, PNG, atau WebP ya.");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("Ukuran gambar maksimal 5 MB ya.");
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const element = new Image();
+      element.onload = () => resolve(element);
+      element.onerror = () => reject(new Error("File gambar tidak dapat dibaca."));
+      element.src = objectUrl;
+    });
+
+    const size = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    const side = Math.min(image.naturalWidth || image.width, image.naturalHeight || image.height);
+    const sx = Math.floor(((image.naturalWidth || image.width) - side) / 2);
+    const sy = Math.floor(((image.naturalHeight || image.height) - side) / 2);
+    context.drawImage(image, sx, sy, side, side, 0, 0, size, size);
+
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.88));
+    return { blob, dataUrl };
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+function extractAvatarBucketPath(url) {
+  if (!url) return "";
+  const marker = "/storage/v1/object/public/avatars/";
+  const index = String(url).indexOf(marker);
+  if (index === -1) return "";
+  return decodeURIComponent(String(url).slice(index + marker.length).split("?")[0]);
+}
+
+function openSettingsModal() {
+  if (!state.user || !state.profile) return;
+  state.settingsDraft = { blob: null, previewUrl: "", resetToGoogle: false };
+  const email = state.profile.email || state.user.email || "";
+  const name = (state.profile.full_name || "").trim() || email.split("@")[0];
+  const currentAvatar = resolveUserAvatar(state.user, state.profile);
+  const googleAvatar = getGoogleAvatarUrl(state.user);
+  const initials = getInitials(name, email);
+
+  openModal(`
+    ${modalHeader("Pengaturan Akun", "Ubah foto profil, nama tampilan, atau keluar dari panel admin.")}
+    <div class="panel-modal-content">
+      <div id="panel-settings-message" class="form-message" role="alert" hidden style="margin-bottom:14px"></div>
+      <div class="settings-profile-card">
+        <div class="settings-avatar-large">
+          <img id="panel-settings-avatar-preview" src="${escapeAttribute(currentAvatar)}" alt="" referrerpolicy="no-referrer" ${currentAvatar ? "" : "hidden"}>
+          <span id="panel-settings-avatar-initials" ${currentAvatar ? "hidden" : ""}>${escapeHtml(initials)}</span>
+        </div>
+        <div class="settings-profile-meta">
+          <strong id="panel-settings-display-name">${escapeHtml(name)}</strong>
+          <span>${escapeHtml(email)}</span>
+          <div class="settings-badges">
+            <span class="role-badge">BPK PENABUR</span>
+            ${roleBadge(state.role)}
+          </div>
+        </div>
+      </div>
+
+      <form id="panel-account-settings">
+        <div class="settings-avatar-actions">
+          <label class="upload-btn-wrap" for="panel-settings-avatar-input">
+            <input id="panel-settings-avatar-input" type="file" accept="image/jpeg,image/png,image/webp">
+            <span class="button button-secondary button-small">Ganti foto profil</span>
+          </label>
+          <button id="panel-settings-reset-avatar" class="button button-quiet button-small" type="button" data-action="reset-google-avatar" ${(!googleAvatar && !currentAvatar) ? "disabled" : ""}>Gunakan foto Google</button>
+          <p class="settings-avatar-hint">JPG, PNG, atau WebP · maks. 5 MB · otomatis dipotong persegi.</p>
+        </div>
+
+        <label class="field" for="panel-settings-full-name">
+          <span>Nama tampilan</span>
+          <input id="panel-settings-full-name" name="full_name" type="text" required minlength="1" maxlength="120" value="${escapeAttribute(name)}">
+        </label>
+
+        <div class="form-actions">
+          <button class="button button-primary" type="submit">Simpan perubahan</button>
+          <button class="button button-secondary" type="button" data-action="close-modal">Tutup</button>
+        </div>
+      </form>
+
+      <div class="settings-logout-box">
+        <div class="settings-logout-copy">
+          <strong>Keluar dari panel</strong>
+          <span>Akhiri sesi login admin di perangkat ini.</span>
+        </div>
+        <button class="button button-danger button-small" type="button" data-action="logout-from-settings">Keluar</button>
+      </div>
+    </div>`, { narrow: true, title: "Pengaturan Akun" });
+
+  const previewImg = document.getElementById("panel-settings-avatar-preview");
+  const previewInitials = document.getElementById("panel-settings-avatar-initials");
+  if (previewImg && previewInitials) {
+    previewImg.addEventListener("error", () => {
+      previewImg.hidden = true;
+      previewInitials.hidden = false;
+    });
+  }
+}
+
+function setSettingsMessage(text, isSuccess = false) {
+  const box = document.getElementById("panel-settings-message");
+  if (!box) return;
+  if (!text) {
+    box.hidden = true;
+    box.textContent = "";
+    box.classList.remove("is-success");
+    return;
+  }
+  box.hidden = false;
+  box.textContent = text;
+  box.classList.toggle("is-success", isSuccess);
+}
+
+function updateSettingsPreview(url, nameValue) {
+  const previewImg = document.getElementById("panel-settings-avatar-preview");
+  const previewInitials = document.getElementById("panel-settings-avatar-initials");
+  const displayName = document.getElementById("panel-settings-display-name");
+  const email = (state.profile && state.profile.email) || (state.user && state.user.email) || "";
+  const cleanName = String(nameValue || "").trim() || email.split("@")[0];
+
+  if (displayName) displayName.textContent = cleanName;
+  if (previewInitials) previewInitials.textContent = getInitials(cleanName, email);
+
+  if (previewImg && previewInitials) {
+    if (url) {
+      previewImg.src = url;
+      previewImg.hidden = false;
+      previewInitials.hidden = true;
+    } else {
+      previewImg.removeAttribute("src");
+      previewImg.hidden = true;
+      previewInitials.hidden = false;
+    }
+  }
+}
+
+async function handleSettingsAvatarChange(input) {
+  const file = input.files && input.files[0] ? input.files[0] : null;
+  if (!file) return;
+  setSettingsMessage("");
+  try {
+    const { blob, dataUrl } = await prepareAvatarFile(file);
+    state.settingsDraft = { blob, previewUrl: dataUrl, resetToGoogle: false };
+    const nameInput = document.getElementById("panel-settings-full-name");
+    updateSettingsPreview(dataUrl, nameInput ? nameInput.value : state.profile.full_name);
+    const resetBtn = document.getElementById("panel-settings-reset-avatar");
+    if (resetBtn) resetBtn.disabled = false;
+  } catch (error) {
+    setSettingsMessage(friendlyError(error), false);
+  } finally {
+    input.value = "";
+  }
+}
+
+function handleSettingsResetAvatar() {
+  if (!state.user) return;
+  setSettingsMessage("");
+  const googleAvatar = getGoogleAvatarUrl(state.user);
+  state.settingsDraft = { blob: null, previewUrl: googleAvatar, resetToGoogle: true };
+  const nameInput = document.getElementById("panel-settings-full-name");
+  updateSettingsPreview(googleAvatar, nameInput ? nameInput.value : state.profile.full_name);
+}
+
+async function submitAccountSettings(form) {
+  if (!state.user || !state.profile || !state.client) return;
+  const submitButton = form.querySelector('button[type="submit"]');
+  const originalText = submitButton.textContent;
+  const formData = new FormData(form);
+  const fullName = String(formData.get("full_name") || "").trim();
+  if (!fullName) {
+    setSettingsMessage("Nama tampilan tidak boleh kosong.");
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Menyimpan…";
+  setSettingsMessage("");
+
+  const previousAvatar = state.profile.avatar_url || "";
+  let nextAvatarUrl = previousAvatar;
+  let avatarChanged = false;
+
+  try {
+    if (state.settingsDraft.blob) {
+      avatarChanged = true;
+      const path = `${state.user.id}/avatar-${Date.now()}.jpg`;
+      const uploadResult = await state.client.storage.from("avatars").upload(path, state.settingsDraft.blob, {
+        cacheControl: "3600",
+        contentType: "image/jpeg",
+        upsert: true
+      });
+
+      if (!uploadResult.error) {
+        const { data: urlData } = state.client.storage.from("avatars").getPublicUrl(path);
+        nextAvatarUrl = urlData && urlData.publicUrl ? urlData.publicUrl : state.settingsDraft.previewUrl;
+        setLocalAvatar(state.user.id, nextAvatarUrl);
+        const oldStoredPath = extractAvatarBucketPath(previousAvatar);
+        if (oldStoredPath && oldStoredPath.startsWith(`${state.user.id}/`) && oldStoredPath !== path) {
+          state.client.storage.from("avatars").remove([oldStoredPath]).catch(() => {});
+        }
+      } else {
+        nextAvatarUrl = state.settingsDraft.previewUrl;
+        setLocalAvatar(state.user.id, nextAvatarUrl);
+      }
+    } else if (state.settingsDraft.resetToGoogle) {
+      avatarChanged = true;
+      nextAvatarUrl = getGoogleAvatarUrl(state.user) || null;
+      setLocalAvatar(state.user.id, "");
+      const oldStoredPath = extractAvatarBucketPath(previousAvatar);
+      if (oldStoredPath && oldStoredPath.startsWith(`${state.user.id}/`)) {
+        state.client.storage.from("avatars").remove([oldStoredPath]).catch(() => {});
+      }
+    }
+
+    const updatePayload = { full_name: fullName };
+    if (avatarChanged && state.hasAvatarColumn && (!nextAvatarUrl || !String(nextAvatarUrl).startsWith("data:"))) {
+      updatePayload.avatar_url = nextAvatarUrl;
+    }
+
+    let profileResult = await state.client.from("profiles").update(updatePayload).eq("id", state.user.id);
+    if (profileResult.error && Object.prototype.hasOwnProperty.call(updatePayload, "avatar_url")) {
+      state.hasAvatarColumn = false;
+      profileResult = await state.client.from("profiles").update({ full_name: fullName }).eq("id", state.user.id);
+    }
+    if (profileResult.error) throw profileResult.error;
+
+    const authMetaUpdate = { full_name: fullName };
+    if (avatarChanged) {
+      authMetaUpdate.custom_avatar_url = nextAvatarUrl && !String(nextAvatarUrl).startsWith("data:") ? nextAvatarUrl : "";
+    }
+    await state.client.auth.updateUser({ data: authMetaUpdate }).catch(() => {});
+
+    state.profile.full_name = fullName;
+    if (avatarChanged) {
+      state.profile.avatar_url = nextAvatarUrl || "";
+    }
+    if (state.maps.profiles[state.user.id]) {
+      state.maps.profiles[state.user.id].full_name = fullName;
+      if (avatarChanged) state.maps.profiles[state.user.id].avatar_url = nextAvatarUrl || "";
+    }
+    state.settingsDraft = { blob: null, previewUrl: "", resetToGoogle: false };
+    renderPanelAccountIdentity();
+    closeModal();
+    renderView();
+    setAlert("Pengaturan akun berhasil disimpan.", "success");
+  } catch (error) {
+    setSettingsMessage(friendlyError(error), false);
+    submitButton.disabled = false;
+    submitButton.textContent = originalText;
+  }
+}
+
+function handleDialogChange(event) {
+  if (event.target && event.target.id === "panel-settings-avatar-input") {
+    handleSettingsAvatarChange(event.target);
+  }
+}
+
+function handleDialogInput(event) {
+  if (event.target && event.target.id === "panel-settings-full-name") {
+    const previewImg = document.getElementById("panel-settings-avatar-preview");
+    const activeUrl = previewImg && !previewImg.hidden ? previewImg.getAttribute("src") : "";
+    updateSettingsPreview(activeUrl, event.target.value);
+  }
+}
 
 function handlePanelClick(event) {
   const target = event.target.closest("[data-action]");
@@ -2802,7 +3203,13 @@ function handlePanelChange(event) {
 }
 
 async function applyRoleChange(userId, role, select) {
-  const previous = state.maps.profiles[userId] ? state.maps.profiles[userId].role : "user";
+  const targetProfile = state.maps.profiles[userId];
+  const previous = targetProfile ? targetProfile.role : "user";
+  if (role !== "user" && (!targetProfile || !isAllowedEmail(targetProfile.email))) {
+    select.value = previous;
+    setAlert("Hanya akun BPK PENABUR yang dapat diberikan akses pengelola atau admin.", "error");
+    return;
+  }
   const approved = await confirmAction({
     title: "Ubah jabatan pengguna?",
     message: `Jabatan akan menjadi ${ROLE_LABELS[role] || role}. Hak akses di panel ikut menyesuaikan.`,
@@ -2837,7 +3244,8 @@ function handlePanelSubmit(event) {
     "panel-ticket-note": submitTicketNote,
     "panel-handover": submitHandover,
     "panel-reject-claim": submitRejectClaim,
-    "panel-manual-match": submitManualMatch
+    "panel-manual-match": submitManualMatch,
+    "panel-account-settings": submitAccountSettings
   };
   const handler = handlers[form.id];
   if (!handler) return;
@@ -2857,10 +3265,14 @@ window.addEventListener("beforeunload", (event) => {
   return event.returnValue;
 });
 
+elements.accountAvatarImg.addEventListener("error", () => {
+  elements.accountAvatarImg.hidden = true;
+  elements.accountAvatarFallback.hidden = false;
+});
+elements.settingsButton.addEventListener("click", openSettingsModal);
 elements.googleLogin.addEventListener("click", handleGoogleLogin);
 elements.cookieNoticeButton.addEventListener("click", () => setCookieNoticeOpen(elements.cookieNoticePanel.hidden));
 elements.cookieNoticeClose.addEventListener("click", () => setCookieNoticeOpen(false));
-elements.logoutButton.addEventListener("click", handleLogout);
 document.querySelector(".panel-header").addEventListener("click", handlePanelClick);
 elements.nav.addEventListener("click", handlePanelClick);
 elements.viewHost.addEventListener("click", handlePanelClick);
@@ -2868,6 +3280,8 @@ elements.viewHost.addEventListener("submit", handlePanelSubmit);
 elements.viewHost.addEventListener("change", handlePanelChange);
 elements.viewHost.addEventListener("input", handlePanelChange);
 elements.dialogRoot.addEventListener("click", handlePanelClick);
+elements.dialogRoot.addEventListener("change", handleDialogChange);
+elements.dialogRoot.addEventListener("input", handleDialogInput);
 elements.dialogRoot.addEventListener("submit", handlePanelSubmit);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && elements.dialogRoot.firstElementChild) closeModal();
