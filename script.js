@@ -1,10 +1,11 @@
 const SUPABASE_URL = "https://jnuzdskjvdttdyokajgt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpudXpkc2tqdmR0dGR5b2thamd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTY3NjQsImV4cCI6MjEwMjE5Mjc2NH0.6c1GiFeEkG9V47KDcTriQj6AsFaETaShSsOeSD1OERw";
-const ALLOWED_DOMAIN = "@bpkpenabur.sch.id";
-const EXTRA_ALLOWED_EMAILS = ["arlandomlbb@gmail.com"];
+const PENABUR_DOMAIN = "@bpkpenabur.sch.id";
+const ALLOWED_DOMAINS = ["@bpkpenabur.sch.id", "@gmail.com"];
 const PANEL_URL = "Admin.html";
 const ANNOUNCEMENT_LIMIT = 3;
-const GALLERY_LIMIT = 8;
+const GALLERY_MAX_ITEMS = 40;
+const GALLERY_MIN_CYCLE = 12;
 const PANEL_ROLE_LABELS = { staff: "Petugas", moderator: "Moderator", admin: "Admin", developer: "Developer" };
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -34,6 +35,7 @@ const state = {
   client: null,
   user: null,
   profile: null,
+  hasAvatarColumn: true,
   view: "foundItems",
   foundItems: [],
   selectedItem: null,
@@ -49,27 +51,35 @@ const state = {
   loginMessage: "",
   loginMessageType: "error",
   hydratingUserId: null,
-  navigationToken: 0
+  navigationToken: 0,
+  settingsDraft: { blob: null, previewUrl: "", resetToGoogle: false },
+  gallerySuppressClick: false
 };
 
 const I18N = {
   id: {
-    skip: "Lewati ke konten", oauth: "Masuk dengan akun Google sekolah:", langLabel: "Bahasa",
-    loginHint: "Gunakan akun Google BPK PENABUR untuk masuk.",
+    skip: "Lewati ke konten",
+    oauth: "Masuk dengan akun Google:",
+    langLabel: "Bahasa",
+    loginHint: "Gunakan akun Google BPK PENABUR atau Gmail untuk masuk.",
     setup: "<strong>Konfigurasi diperlukan</strong><span>Hubungkan project Supabase di <code>script.js</code> agar autentikasi dapat digunakan.</span>",
     cookieTitle: "Pemberitahuan sesi",
-    cookieText: "Portal menggunakan penyimpanan browser Supabase untuk menjaga sesi login. Masuk hanya bisa lewat akun Google sekolah.",
-    close: "Tutup", cookieBtn: "Pemberitahuan cookie",
-    msgDomain: "Tolong gunakan akun BPK PENABUR untuk mengakses Lost & Found."
+    cookieText: "Portal menggunakan penyimpanan browser Supabase untuk menjaga sesi login dengan akun Google BPK PENABUR atau Gmail.",
+    close: "Tutup",
+    cookieBtn: "Pemberitahuan cookie",
+    msgDomain: "Tolong gunakan akun Google BPK PENABUR atau Gmail untuk mengakses Lost & Found."
   },
   en: {
-    skip: "Skip to content", oauth: "Sign in with your school Google account:", langLabel: "Language",
-    loginHint: "Use your BPK PENABUR Google account to sign in.",
+    skip: "Skip to content",
+    oauth: "Sign in with Google:",
+    langLabel: "Language",
+    loginHint: "Use your BPK PENABUR Google or Gmail account to sign in.",
     setup: "<strong>Configuration required</strong><span>Connect your Supabase project in <code>script.js</code> to enable authentication.</span>",
     cookieTitle: "Session notice",
-    cookieText: "This portal uses Supabase browser storage to keep you signed in. Sign-in is only available with a school Google account.",
-    close: "Close", cookieBtn: "Cookies notice",
-    msgDomain: "Please use your BPK PENABUR account to access Lost & Found."
+    cookieText: "This portal uses Supabase browser storage to keep you signed in with your BPK PENABUR Google or Gmail account.",
+    close: "Close",
+    cookieBtn: "Cookies notice",
+    msgDomain: "Please use your BPK PENABUR Google or Gmail account to access Lost & Found."
   }
 };
 
@@ -96,9 +106,11 @@ const elements = {
   cookieNoticePanel: document.getElementById("cookie-notice-panel"),
   cookieNoticeClose: document.getElementById("cookie-notice-close"),
   setupNotice: document.getElementById("setup-notice"),
+  accountSettingsButton: document.getElementById("account-settings-button"),
   accountName: document.getElementById("account-name"),
   accountEmail: document.getElementById("account-email"),
-  logoutButton: document.getElementById("logout-button"),
+  accountAvatarImg: document.getElementById("account-avatar-img"),
+  accountAvatarFallback: document.getElementById("account-avatar-fallback"),
   adminNav: document.getElementById("admin-navigation-link"),
   accountBadge: document.getElementById("account-badge"),
   panelLink: document.getElementById("panel-link"),
@@ -140,10 +152,12 @@ function initialize() {
       state.panelRole = "user";
       state.announcements = [];
       applyPanelIdentity();
+      renderAccountIdentity();
       state.foundItems = [];
       state.selectedItem = null;
       state.hydratingUserId = null;
       state.navigationToken += 1;
+      elements.dialogRoot.innerHTML = "";
       showLogin();
       return;
     }
@@ -161,11 +175,134 @@ function initialize() {
   }).catch((error) => console.error("Could not restore Supabase session:", error));
 }
 
-function isAllowedEmail(value) {
+function parseEmailDomain(value) {
   const email = String(value || "").trim().toLowerCase();
-  if (EXTRA_ALLOWED_EMAILS.includes(email)) return true;
   const parts = email.split("@");
-  return parts.length === 2 && Boolean(parts[0]) && !/\s/.test(parts[0]) && `@${parts[1]}` === ALLOWED_DOMAIN;
+  if (parts.length !== 2 || !parts[0] || /\s/.test(parts[0]) || !parts[1] || /\s/.test(parts[1])) return "";
+  return `@${parts[1]}`;
+}
+
+function isPenaburEmail(value) {
+  return parseEmailDomain(value) === PENABUR_DOMAIN;
+}
+
+function isAllowedEmail(value) {
+  const domain = parseEmailDomain(value);
+  return ALLOWED_DOMAINS.includes(domain);
+}
+
+function localAvatarKey(userId) {
+  return `lf-avatar:${userId}`;
+}
+
+function getLocalAvatar(userId) {
+  if (!userId) return "";
+  try {
+    const stored = localStorage.getItem(localAvatarKey(userId)) || "";
+    return isSafeAvatarUrl(stored) ? stored : "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function setLocalAvatar(userId, value) {
+  if (!userId) return;
+  try {
+    if (value) localStorage.setItem(localAvatarKey(userId), value);
+    else localStorage.removeItem(localAvatarKey(userId));
+  } catch (error) {}
+}
+
+function isSafeAvatarUrl(value) {
+  if (!value) return false;
+  const trimmed = String(value).trim();
+  if (/^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=\s]+$/i.test(trimmed)) return true;
+  return isSafeImageUrl(trimmed);
+}
+
+function getGoogleAvatarUrl(user) {
+  if (!user) return "";
+  const meta = user.user_metadata || {};
+  const candidates = [meta.avatar_url, meta.picture];
+  const identities = Array.isArray(user.identities) ? user.identities : [];
+  identities.forEach((identity) => {
+    const data = (identity && identity.identity_data) || {};
+    candidates.push(data.avatar_url, data.picture);
+  });
+  for (const candidate of candidates) {
+    if (candidate && isSafeImageUrl(candidate)) return candidate;
+  }
+  return "";
+}
+
+function resolveUserAvatar(user, profile) {
+  if (profile && profile.avatar_url && isSafeAvatarUrl(profile.avatar_url)) return profile.avatar_url;
+  const cached = user ? getLocalAvatar(user.id) : "";
+  if (cached) return cached;
+  const meta = (user && user.user_metadata) || {};
+  if (meta.custom_avatar_url && isSafeAvatarUrl(meta.custom_avatar_url)) return meta.custom_avatar_url;
+  return getGoogleAvatarUrl(user);
+}
+
+function getInitials(name, email) {
+  const source = String(name || "").trim() || String(email || "").split("@")[0] || "U";
+  const parts = source.split(/[\s._-]+/).filter(Boolean);
+  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  return source.slice(0, 2).toUpperCase();
+}
+
+function renderAccountIdentity() {
+  if (!state.user || !state.profile) {
+    elements.accountName.textContent = "";
+    elements.accountEmail.textContent = "";
+    elements.accountAvatarImg.removeAttribute("src");
+    elements.accountAvatarImg.hidden = true;
+    elements.accountAvatarFallback.hidden = false;
+    elements.accountAvatarFallback.textContent = "";
+    return;
+  }
+  const email = state.profile.email || state.user.email || "";
+  const name = (state.profile.full_name || "").trim() || email.split("@")[0];
+  const avatarUrl = resolveUserAvatar(state.user, state.profile);
+  const initials = getInitials(name, email);
+
+  elements.accountName.textContent = name;
+  elements.accountEmail.textContent = email;
+  elements.accountAvatarFallback.textContent = initials;
+
+  if (avatarUrl) {
+    elements.accountAvatarImg.src = avatarUrl;
+    elements.accountAvatarImg.hidden = false;
+    elements.accountAvatarFallback.hidden = true;
+  } else {
+    elements.accountAvatarImg.removeAttribute("src");
+    elements.accountAvatarImg.hidden = true;
+    elements.accountAvatarFallback.hidden = false;
+  }
+}
+
+async function fetchOwnProfile(userId) {
+  const fullResult = await state.client
+    .from("profiles")
+    .select("id, full_name, email, avatar_url, role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!fullResult.error) {
+    state.hasAvatarColumn = true;
+    return fullResult;
+  }
+
+  const fallbackResult = await state.client
+    .from("profiles")
+    .select("id, full_name, email, role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!fallbackResult.error) {
+    state.hasAvatarColumn = false;
+  }
+  return fallbackResult;
 }
 
 function showLogin(message, type) {
@@ -208,27 +345,27 @@ async function hydrateUser(user) {
 
   state.hydratingUserId = user.id;
   try {
-    const { data: profile, error } = await state.client
-      .from("profiles")
-      .select("id, full_name, email, role")
-      .eq("id", user.id)
-      .maybeSingle();
+    const { data: profile, error } = await fetchOwnProfile(user.id);
 
     if (error || !profile) {
       console.error("Profile lookup failed:", error);
       await state.client.auth.signOut();
-      showLogin("Profil akun belum tersedia. Pastikan schema Supabase dan trigger pembuatan profil sudah dipasang.");
+      showLogin("Profil akun belum tersedia. Pastikan file sql.txt terbaru sudah dijalankan di Supabase SQL Editor.");
       return;
+    }
+
+    const googleAvatar = getGoogleAvatarUrl(user);
+    if (state.hasAvatarColumn && !profile.avatar_url && !getLocalAvatar(user.id) && googleAvatar) {
+      profile.avatar_url = googleAvatar;
+      state.client.from("profiles").update({ avatar_url: googleAvatar }).eq("id", user.id).then(() => {});
     }
 
     state.user = user;
     state.profile = profile;
     state.loginMessage = "";
     state.adminTab = "found";
-    const name = (profile.full_name || "").trim() || (user.email || "").split("@")[0];
-    elements.accountName.textContent = name;
-    elements.accountEmail.textContent = profile.email || user.email || "";
-    state.panelRole = normalizePanelRole(profile.role);
+    state.panelRole = isPenaburEmail(user.email) ? normalizePanelRole(profile.role) : "user";
+    renderAccountIdentity();
     applyPanelIdentity();
     elements.adminNav.hidden = state.panelRole === "user";
     elements.loginView.hidden = true;
@@ -263,7 +400,7 @@ async function handleGoogleLogin() {
     });
     if (error) throw error;
   } catch (error) {
-    setLoginMessage("Google login belum tersedia. Pastikan Google OAuth resmi BPK PENABUR sudah diaktifkan di Supabase.");
+    setLoginMessage("Google login belum tersedia. Pastikan Google OAuth sudah diaktifkan di Supabase.");
     console.error("Google OAuth failed:", error);
   } finally {
     elements.googleLogin.disabled = false;
@@ -273,17 +410,16 @@ async function handleGoogleLogin() {
 
 async function handleLogout() {
   if (!state.client) return;
-  elements.logoutButton.disabled = true;
   try {
     const { error } = await state.client.auth.signOut();
     if (error) throw error;
+    elements.dialogRoot.innerHTML = "";
     state.user = null;
     state.profile = null;
+    renderAccountIdentity();
     showLogin("");
   } catch (error) {
-    showAppAlert(friendlyError(error), "error");
-  } finally {
-    elements.logoutButton.disabled = false;
+    setAppAlert(friendlyError(error), "error");
   }
 }
 
@@ -383,7 +519,7 @@ async function navigateTo(route) {
     } catch (error) {
       if (navigationToken !== state.navigationToken) return;
       console.error("Could not load admin data:", error);
-      elements.appContent.innerHTML = errorMarkup("Data admin belum dapat dimuat.", "Pastikan akun Anda memiliki role admin dan RLS policy telah dipasang.");
+      elements.appContent.innerHTML = errorMarkup("Data admin belum dapat dimuat.", "Pastikan akun BPK PENABUR Anda memiliki role admin dan RLS policy telah dipasang.");
     }
   }
 }
@@ -423,23 +559,20 @@ async function loadClaimStatus(itemId) {
   state.claimStatus = data || null;
 }
 
-function gallerySlides() {
+function galleryBaseSlides() {
   const items = (state.foundItems || []).slice()
     .sort((a, b) => new Date(b.found_at || b.created_at || 0).getTime() - new Date(a.found_at || a.created_at || 0).getTime())
-    .slice(0, GALLERY_LIMIT);
-  if (items.length) {
-    return items.map((item) => ({
-      id: item.id,
-      name: item.name || "Barang tanpa nama",
-      place: item.location_found || "Lokasi belum dicatat",
-      imageUrl: item.imageUrl || null
-    }));
-  }
-  return Array.from({ length: 4 }, () => ({ id: "", name: "Foto belum tersedia", place: "Menunggu barang temuan pertama", imageUrl: null }));
+    .slice(0, GALLERY_MAX_ITEMS);
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name || "Barang tanpa nama",
+    place: item.location_found || "Lokasi belum dicatat",
+    imageUrl: item.imageUrl || null
+  }));
 }
 
 function galleryFrameMarkup(slide) {
-  const photo = renderImage(slide.imageUrl, `Foto ${slide.name}`, "gallery-photo");
+  const photo = renderImage(slide.imageUrl, `Foto ${slide.name}`, "gallery-photo", true);
   if (photo) return `<span class="gallery-frame">${photo}</span>`;
   return `<span class="gallery-frame is-empty"><span class="gallery-blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2"></rect><circle cx="8.6" cy="10" r="1.6"></circle><path d="m4 17.2 4.8-4.3 3.9 3.4 2.9-2.4 4.4 3.9"></path></svg></span></span>`;
 }
@@ -453,25 +586,173 @@ function gallerySlideMarkup(slide, duplicate) {
 }
 
 function renderItemGallery() {
-  const slides = gallerySlides();
-  const duration = Math.max(24, slides.length * 6);
-  const track = slides.map((slide) => gallerySlideMarkup(slide, false)).join("")
-    + slides.map((slide) => gallerySlideMarkup(slide, true)).join("");
+  const baseSlides = galleryBaseSlides();
+  if (!baseSlides.length) {
+    const emptySlides = Array.from({ length: 4 }, () => ({
+      id: "",
+      name: "Foto belum tersedia",
+      place: "Menunggu barang temuan pertama",
+      imageUrl: null
+    }));
+    return `
+      <section class="gallery-card" aria-labelledby="gallery-title">
+        <div class="gallery-head">
+          <div>
+            <h2 id="gallery-title">Galeri barang temuan</h2>
+            <p class="gallery-note">Daftar barang yang ditemukan.</p>
+          </div>
+          <div class="gallery-controls">
+            <button class="gallery-nav-btn" type="button" disabled aria-label="Geser galeri ke kiri">&#8249;</button>
+            <button class="gallery-nav-btn" type="button" disabled aria-label="Geser galeri ke kanan">&#8250;</button>
+          </div>
+        </div>
+        <div id="gallery-strip" class="gallery-strip is-static" data-infinite="false">
+          <div id="gallery-track" class="gallery-track">${emptySlides.map((slide) => gallerySlideMarkup(slide, false)).join("")}</div>
+        </div>
+      </section>`;
+  }
+
+  const cycle = [];
+  while (cycle.length < GALLERY_MIN_CYCLE) {
+    for (let index = 0; index < baseSlides.length; index += 1) {
+      cycle.push({ ...baseSlides[index], duplicateInCycle: cycle.length >= baseSlides.length });
+    }
+  }
+
+  const firstCopy = cycle.map((slide) => gallerySlideMarkup(slide, true)).join("");
+  const middleCopy = cycle.map((slide) => gallerySlideMarkup(slide, Boolean(slide.duplicateInCycle))).join("");
+  const lastCopy = cycle.map((slide) => gallerySlideMarkup(slide, true)).join("");
+
   return `
     <section class="gallery-card" aria-labelledby="gallery-title">
       <div class="gallery-head">
-        <h2 id="gallery-title">Galeri barang temuan</h2>
-        <p class="gallery-note">Daftar barang yang ditemukan.</p>
+        <div>
+          <h2 id="gallery-title">Galeri barang temuan</h2>
+          <p class="gallery-note">Daftar barang yang ditemukan. Geser ke kanan atau gunakan panah untuk melihat lainnya.</p>
+        </div>
+        <div class="gallery-controls">
+          <button class="gallery-nav-btn" type="button" data-action="gallery-prev" aria-label="Geser galeri ke kiri">&#8249;</button>
+          <button class="gallery-nav-btn" type="button" data-action="gallery-next" aria-label="Geser galeri ke kanan">&#8250;</button>
+        </div>
       </div>
-      <div class="gallery-strip">
-        <div class="gallery-track" style="animation-duration: ${duration}s">${track}</div>
+      <div id="gallery-strip" class="gallery-strip" data-infinite="true" data-cycle-count="${cycle.length}">
+        <div id="gallery-track" class="gallery-track">${firstCopy}${middleCopy}${lastCopy}</div>
       </div>
     </section>`;
+}
+
+function getGalleryCycleWidth(strip, track) {
+  const cycleCount = Number(strip.dataset.cycleCount) || 0;
+  if (!cycleCount || track.children.length < cycleCount * 2) return 0;
+  const startNode = track.children[0];
+  const nextCycleNode = track.children[cycleCount];
+  return nextCycleNode.offsetLeft - startNode.offsetLeft;
+}
+
+function normalizeGalleryPosition(strip, track) {
+  const cycleWidth = getGalleryCycleWidth(strip, track);
+  if (cycleWidth <= 0) return 0;
+  const maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
+  const upperThreshold = Math.min(cycleWidth * 1.95, Math.max(cycleWidth * 1.2, maxScroll - 60));
+  const lowerThreshold = Math.min(cycleWidth * 0.35, Math.max(40, maxScroll * 0.15));
+
+  if (strip.scrollLeft <= lowerThreshold) {
+    strip.scrollLeft += cycleWidth;
+    return cycleWidth;
+  }
+  if (strip.scrollLeft >= upperThreshold) {
+    strip.scrollLeft -= cycleWidth;
+    return -cycleWidth;
+  }
+  return 0;
+}
+
+function scrollGalleryByStep(direction) {
+  const strip = document.getElementById("gallery-strip");
+  const track = document.getElementById("gallery-track");
+  if (!strip || !track || strip.dataset.infinite !== "true") return;
+  const cycleWidth = getGalleryCycleWidth(strip, track);
+  if (cycleWidth > 0) {
+    if (strip.scrollLeft > cycleWidth * 1.55) strip.scrollLeft -= cycleWidth;
+    else if (strip.scrollLeft < cycleWidth * 0.65) strip.scrollLeft += cycleWidth;
+  }
+  const firstSlide = track.children[0];
+  const secondSlide = track.children[1];
+  const slideStep = firstSlide && secondSlide ? (secondSlide.offsetLeft - firstSlide.offsetLeft) : 182;
+  const distance = Math.max(slideStep * 2, Math.round(strip.clientWidth * 0.52));
+  strip.scrollBy({ left: direction * distance, behavior: "smooth" });
+}
+
+function setupInfiniteGallery() {
+  const strip = document.getElementById("gallery-strip");
+  const track = document.getElementById("gallery-track");
+  if (!strip || !track || strip.dataset.infinite !== "true") return;
+
+  const positionToCenter = () => {
+    const cycleWidth = getGalleryCycleWidth(strip, track);
+    if (cycleWidth > 0) strip.scrollLeft = cycleWidth;
+  };
+
+  positionToCenter();
+  window.requestAnimationFrame(positionToCenter);
+
+  let pointerDown = false;
+  let dragging = false;
+  let startX = 0;
+  let startScrollLeft = 0;
+
+  strip.addEventListener("scroll", () => {
+    const shift = normalizeGalleryPosition(strip, track);
+    if (dragging && shift !== 0) {
+      startScrollLeft += shift;
+    }
+  }, { passive: true });
+
+  strip.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (event.pointerType !== "mouse") return;
+    pointerDown = true;
+    dragging = false;
+    startX = event.clientX;
+    startScrollLeft = strip.scrollLeft;
+  });
+
+  window.addEventListener("pointermove", (event) => {
+    if (!pointerDown || !strip.isConnected) return;
+    const deltaX = event.clientX - startX;
+    if (!dragging && Math.abs(deltaX) > 6) {
+      dragging = true;
+      state.gallerySuppressClick = true;
+      strip.classList.add("is-dragging");
+    }
+    if (dragging) {
+      event.preventDefault();
+      strip.scrollLeft = startScrollLeft - deltaX;
+      const shift = normalizeGalleryPosition(strip, track);
+      if (shift !== 0) {
+        startScrollLeft += shift;
+      }
+    }
+  });
+
+  const endPointerDrag = () => {
+    if (!pointerDown) return;
+    pointerDown = false;
+    strip.classList.remove("is-dragging");
+    if (dragging) {
+      dragging = false;
+      window.setTimeout(() => { state.gallerySuppressClick = false; }, 80);
+    }
+  };
+
+  window.addEventListener("pointerup", endPointerDrag);
+  window.addEventListener("pointercancel", endPointerDrag);
 }
 
 function renderFoundItemsPage() {
   elements.appContent.innerHTML = `
     <section aria-labelledby="found-page-title">
+      <h1 id="found-page-title" class="visually-hidden">Barang Ditemukan</h1>
       ${renderItemGallery()}
       ${renderAnnouncementList()}
       <div class="filter-bar" aria-label="Pencarian dan filter barang">
@@ -501,6 +782,7 @@ function renderFoundItemsPage() {
       </div>
       <div id="found-list-wrap" aria-live="polite"></div>
     </section>`;
+  setupInfiniteGallery();
   renderFoundList();
 }
 
@@ -526,7 +808,7 @@ function renderFoundList() {
   wrap.innerHTML = `
     <div class="list-heading">
       <h2>Daftar barang</h2>
-      <span class="list-count">${list.length} ${list.length === 1 ? "barang" : "barang"}</span>
+      <span class="list-count">${list.length} barang</span>
     </div>
     ${list.length ? `<div class="item-list">${list.map(renderFoundItemRow).join("")}</div>` : renderEmptyState(emptyText[0], emptyText[1])}`;
 }
@@ -550,6 +832,7 @@ function renderFoundItemRow(item) {
       </div>
     </article>`;
 }
+
 function renderItemDetail() {
   const item = state.selectedItem;
   if (!item) return;
@@ -596,6 +879,7 @@ function detailSection(label, value) {
   if (!value) return "";
   return `<section class="detail-section"><h2>${escapeHtml(label)}</h2><p>${escapeHtml(value)}</p></section>`;
 }
+
 function metaItem(label, value) {
   return `<div class="meta-item"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`;
 }
@@ -621,6 +905,7 @@ function renderReportPage(route) {
     return;
   }
 
+  const userEmail = (state.profile && state.profile.email) || (state.user && state.user.email) || "";
   elements.appContent.innerHTML = `
     <section aria-labelledby="report-page-title">
       <div class="page-heading">
@@ -629,7 +914,7 @@ function renderReportPage(route) {
         </div>
       </div>
       <form id="${isLost ? "report-lost-form" : "report-found-form"}" class="form-panel">
-        <p class="form-panel-intro">Laporan dikaitkan dengan akun BPK PENABUR Anda. Isi informasi sejelas mungkin.</p>
+        <p class="form-panel-intro">Laporan dikaitkan dengan akun Anda (${escapeHtml(userEmail)}). Isi informasi sejelas mungkin.</p>
         <div class="form-grid">
           <label class="field" for="report-name"><span>Nama barang</span><input id="report-name" name="name" type="text" minlength="2" maxlength="120" required placeholder="Contoh: tempat pensil biru"></label>
           <label class="field" for="report-category"><span>Kategori</span><select id="report-category" name="category" required>${renderCategoryOptions("", false)}</select></label>
@@ -775,8 +1060,8 @@ async function loadAdminData() {
 }
 
 function renderAdminPage() {
-  if (!state.profile || state.panelRole === "user") {
-    elements.appContent.innerHTML = errorMarkup("Akses admin tidak tersedia.", "Halaman ini hanya dapat dibuka oleh petugas yang ditetapkan sebagai admin.");
+  if (!state.profile || state.panelRole === "user" || !isPenaburEmail(state.user && state.user.email)) {
+    elements.appContent.innerHTML = errorMarkup("Akses admin tidak tersedia.", "Halaman ini hanya dapat dibuka oleh akun BPK PENABUR yang ditetapkan sebagai admin.");
     return;
   }
   const tabs = [
@@ -967,6 +1252,273 @@ async function uploadImage(file, bucket) {
   return path;
 }
 
+async function prepareAvatarFile(file) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error("Gunakan file JPG, PNG, atau WebP.");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("Ukuran foto maksimum 5 MB.");
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const element = new Image();
+      element.onload = () => resolve(element);
+      element.onerror = () => reject(new Error("File gambar tidak dapat dibaca."));
+      element.src = objectUrl;
+    });
+
+    const size = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    const side = Math.min(image.naturalWidth || image.width, image.naturalHeight || image.height);
+    const sx = Math.floor(((image.naturalWidth || image.width) - side) / 2);
+    const sy = Math.floor(((image.naturalHeight || image.height) - side) / 2);
+    context.drawImage(image, sx, sy, side, side, 0, 0, size, size);
+
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.88));
+    return { blob, dataUrl };
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+function extractAvatarBucketPath(url) {
+  if (!url) return "";
+  const marker = "/storage/v1/object/public/avatars/";
+  const index = String(url).indexOf(marker);
+  if (index === -1) return "";
+  return decodeURIComponent(String(url).slice(index + marker.length).split("?")[0]);
+}
+
+function openSettingsModal() {
+  if (!state.user || !state.profile) return;
+  state.settingsDraft = { blob: null, previewUrl: "", resetToGoogle: false };
+  const email = state.profile.email || state.user.email || "";
+  const name = (state.profile.full_name || "").trim() || email.split("@")[0];
+  const currentAvatar = resolveUserAvatar(state.user, state.profile);
+  const googleAvatar = getGoogleAvatarUrl(state.user);
+  const initials = getInitials(name, email);
+  const accountTypeLabel = isPenaburEmail(email) ? "BPK PENABUR" : "Gmail";
+  const roleLabel = PANEL_ROLE_LABELS[normalizePanelRole(state.panelRole)] || "";
+
+  elements.dialogRoot.innerHTML = `
+    <div class="modal-backdrop" data-action="close-modal">
+      <section class="modal-dialog is-narrow" role="dialog" aria-modal="true" aria-labelledby="settings-dialog-title">
+        <div class="modal-header">
+          <div>
+            <p class="section-kicker">Akun</p>
+            <h2 id="settings-dialog-title">Pengaturan Akun</h2>
+          </div>
+          <button class="modal-close" type="button" aria-label="Tutup" data-action="close-modal">×</button>
+        </div>
+        <div class="modal-content">
+          <div id="settings-message" class="form-message" role="alert" hidden style="margin-bottom:14px"></div>
+          <div class="settings-profile-card">
+            <div class="settings-avatar-large" id="settings-avatar-box">
+              <img id="settings-avatar-preview" src="${escapeAttribute(currentAvatar)}" alt="" referrerpolicy="no-referrer" ${currentAvatar ? "" : "hidden"}>
+              <span id="settings-avatar-initials" ${currentAvatar ? "hidden" : ""}>${escapeHtml(initials)}</span>
+            </div>
+            <div class="settings-profile-meta">
+              <strong id="settings-display-name">${escapeHtml(name)}</strong>
+              <span>${escapeHtml(email)}</span>
+              <div class="settings-badges">
+                <span class="role-badge">${escapeHtml(accountTypeLabel)}</span>
+                ${roleLabel ? `<span class="role-badge role-${escapeAttribute(normalizePanelRole(state.panelRole))}">${escapeHtml(roleLabel)}</span>` : ""}
+              </div>
+            </div>
+          </div>
+
+          <form id="account-settings-form">
+            <div class="settings-avatar-actions">
+              <label class="upload-btn-wrap" for="settings-avatar-input">
+                <input id="settings-avatar-input" type="file" accept="image/jpeg,image/png,image/webp">
+                <span class="button button-secondary button-small">Ganti foto profil</span>
+              </label>
+              <button id="settings-reset-avatar" class="button button-quiet button-small" type="button" data-action="reset-google-avatar" ${(!googleAvatar && !currentAvatar) ? "disabled" : ""}>Gunakan foto Google</button>
+              <p class="settings-avatar-hint">JPG, PNG, atau WebP · maks. 5 MB · otomatis dipotong persegi.</p>
+            </div>
+
+            <label class="field" for="settings-full-name">
+              <span>Nama tampilan</span>
+              <input id="settings-full-name" name="full_name" type="text" required minlength="1" maxlength="120" value="${escapeAttribute(name)}">
+            </label>
+
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Simpan perubahan</button>
+              <button class="button button-secondary" type="button" data-action="close-modal">Tutup</button>
+            </div>
+          </form>
+
+          <div class="settings-logout-box">
+            <div class="settings-logout-copy">
+              <strong>Keluar dari akun</strong>
+              <span>Akhiri sesi login Anda di perangkat ini.</span>
+            </div>
+            <button class="button button-danger button-small" type="button" data-action="logout-from-settings">Keluar</button>
+          </div>
+        </div>
+      </section>
+    </div>`;
+
+  const previewImg = document.getElementById("settings-avatar-preview");
+  const previewInitials = document.getElementById("settings-avatar-initials");
+  if (previewImg && previewInitials) {
+    previewImg.addEventListener("error", () => {
+      previewImg.hidden = true;
+      previewInitials.hidden = false;
+    });
+  }
+}
+
+function setSettingsMessage(text, isSuccess = false) {
+  const box = document.getElementById("settings-message");
+  if (!box) return;
+  if (!text) {
+    box.hidden = true;
+    box.textContent = "";
+    box.classList.remove("is-success");
+    return;
+  }
+  box.hidden = false;
+  box.textContent = text;
+  box.classList.toggle("is-success", isSuccess);
+}
+
+function updateSettingsPreview(url, nameValue) {
+  const previewImg = document.getElementById("settings-avatar-preview");
+  const previewInitials = document.getElementById("settings-avatar-initials");
+  const displayName = document.getElementById("settings-display-name");
+  const email = (state.profile && state.profile.email) || (state.user && state.user.email) || "";
+  const cleanName = String(nameValue || "").trim() || email.split("@")[0];
+
+  if (displayName) displayName.textContent = cleanName;
+  if (previewInitials) previewInitials.textContent = getInitials(cleanName, email);
+
+  if (previewImg && previewInitials) {
+    if (url) {
+      previewImg.src = url;
+      previewImg.hidden = false;
+      previewInitials.hidden = true;
+    } else {
+      previewImg.removeAttribute("src");
+      previewImg.hidden = true;
+      previewInitials.hidden = false;
+    }
+  }
+}
+
+async function handleSettingsAvatarChange(input) {
+  const file = input.files && input.files[0] ? input.files[0] : null;
+  if (!file) return;
+  setSettingsMessage("");
+  try {
+    const { blob, dataUrl } = await prepareAvatarFile(file);
+    state.settingsDraft = { blob, previewUrl: dataUrl, resetToGoogle: false };
+    const nameInput = document.getElementById("settings-full-name");
+    updateSettingsPreview(dataUrl, nameInput ? nameInput.value : state.profile.full_name);
+    const resetBtn = document.getElementById("settings-reset-avatar");
+    if (resetBtn) resetBtn.disabled = false;
+  } catch (error) {
+    setSettingsMessage(friendlyError(error), false);
+  } finally {
+    input.value = "";
+  }
+}
+
+function handleSettingsResetAvatar() {
+  if (!state.user) return;
+  setSettingsMessage("");
+  const googleAvatar = getGoogleAvatarUrl(state.user);
+  state.settingsDraft = { blob: null, previewUrl: googleAvatar, resetToGoogle: true };
+  const nameInput = document.getElementById("settings-full-name");
+  updateSettingsPreview(googleAvatar, nameInput ? nameInput.value : state.profile.full_name);
+}
+
+async function handleSettingsSubmit(form) {
+  if (!state.user || !state.profile || !state.client) return;
+  const submitButton = form.querySelector('button[type="submit"]');
+  const originalText = submitButton.textContent;
+  const formData = new FormData(form);
+  const fullName = String(formData.get("full_name") || "").trim();
+  if (!fullName) {
+    setSettingsMessage("Nama tampilan tidak boleh kosong.");
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Menyimpan…";
+  setSettingsMessage("");
+
+  const previousAvatar = state.profile.avatar_url || "";
+  let nextAvatarUrl = previousAvatar;
+  let avatarChanged = false;
+
+  try {
+    if (state.settingsDraft.blob) {
+      avatarChanged = true;
+      const path = `${state.user.id}/avatar-${Date.now()}.jpg`;
+      const uploadResult = await state.client.storage.from("avatars").upload(path, state.settingsDraft.blob, {
+        cacheControl: "3600",
+        contentType: "image/jpeg",
+        upsert: true
+      });
+
+      if (!uploadResult.error) {
+        const { data: urlData } = state.client.storage.from("avatars").getPublicUrl(path);
+        nextAvatarUrl = urlData && urlData.publicUrl ? urlData.publicUrl : state.settingsDraft.previewUrl;
+        setLocalAvatar(state.user.id, nextAvatarUrl);
+        const oldStoredPath = extractAvatarBucketPath(previousAvatar);
+        if (oldStoredPath && oldStoredPath.startsWith(`${state.user.id}/`) && oldStoredPath !== path) {
+          state.client.storage.from("avatars").remove([oldStoredPath]).catch(() => {});
+        }
+      } else {
+        nextAvatarUrl = state.settingsDraft.previewUrl;
+        setLocalAvatar(state.user.id, nextAvatarUrl);
+      }
+    } else if (state.settingsDraft.resetToGoogle) {
+      avatarChanged = true;
+      nextAvatarUrl = getGoogleAvatarUrl(state.user) || null;
+      setLocalAvatar(state.user.id, "");
+      const oldStoredPath = extractAvatarBucketPath(previousAvatar);
+      if (oldStoredPath && oldStoredPath.startsWith(`${state.user.id}/`)) {
+        state.client.storage.from("avatars").remove([oldStoredPath]).catch(() => {});
+      }
+    }
+
+    const updatePayload = { full_name: fullName };
+    if (avatarChanged && state.hasAvatarColumn && (!nextAvatarUrl || !String(nextAvatarUrl).startsWith("data:"))) {
+      updatePayload.avatar_url = nextAvatarUrl;
+    }
+
+    let profileResult = await state.client.from("profiles").update(updatePayload).eq("id", state.user.id);
+    if (profileResult.error && Object.prototype.hasOwnProperty.call(updatePayload, "avatar_url")) {
+      state.hasAvatarColumn = false;
+      profileResult = await state.client.from("profiles").update({ full_name: fullName }).eq("id", state.user.id);
+    }
+    if (profileResult.error) throw profileResult.error;
+
+    const authMetaUpdate = { full_name: fullName };
+    if (avatarChanged) {
+      authMetaUpdate.custom_avatar_url = nextAvatarUrl && !String(nextAvatarUrl).startsWith("data:") ? nextAvatarUrl : "";
+    }
+    await state.client.auth.updateUser({ data: authMetaUpdate }).catch(() => {});
+
+    state.profile.full_name = fullName;
+    if (avatarChanged) {
+      state.profile.avatar_url = nextAvatarUrl || "";
+    }
+    state.settingsDraft = { blob: null, previewUrl: "", resetToGoogle: false };
+    renderAccountIdentity();
+    elements.dialogRoot.innerHTML = "";
+    setAppAlert("Pengaturan akun berhasil disimpan.", "success");
+  } catch (error) {
+    setSettingsMessage(friendlyError(error), false);
+    submitButton.disabled = false;
+    submitButton.textContent = originalText;
+  }
+}
+
 async function changeAdminStatus(table, id, status) {
   const successMessages = {
     available: "Barang disetujui dan ditampilkan.",
@@ -1082,7 +1634,15 @@ function handleMainClick(event) {
   const actionButton = event.target.closest("[data-action]");
   if (!actionButton) return;
   const { action, id, status, tab } = actionButton.dataset;
-  if (action === "open-item") {
+  if (action === "gallery-prev") {
+    scrollGalleryByStep(-1);
+  } else if (action === "gallery-next") {
+    scrollGalleryByStep(1);
+  } else if (action === "open-item") {
+    if (state.gallerySuppressClick && actionButton.closest("#gallery-strip")) {
+      event.preventDefault();
+      return;
+    }
     const item = state.foundItems.find((row) => row.id === id);
     if (!item) return;
     state.selectedItem = item;
@@ -1118,9 +1678,39 @@ function handleMainClick(event) {
 }
 
 function handleDialogClick(event) {
-  const closeButton = event.target.closest("button[data-action='close-modal']");
-  const clickedBackdrop = event.target.classList && event.target.classList.contains("modal-backdrop");
-  if (closeButton || clickedBackdrop) elements.dialogRoot.innerHTML = "";
+  const actionButton = event.target.closest("[data-action]");
+  if (actionButton) {
+    const action = actionButton.dataset.action;
+    if (action === "reset-google-avatar") {
+      handleSettingsResetAvatar();
+      return;
+    }
+    if (action === "logout-from-settings") {
+      handleLogout();
+      return;
+    }
+    if (action === "close-modal" && actionButton.tagName === "BUTTON") {
+      elements.dialogRoot.innerHTML = "";
+      return;
+    }
+  }
+  if (event.target.classList && event.target.classList.contains("modal-backdrop")) {
+    elements.dialogRoot.innerHTML = "";
+  }
+}
+
+function handleDialogChange(event) {
+  if (event.target && event.target.id === "settings-avatar-input") {
+    handleSettingsAvatarChange(event.target);
+  }
+}
+
+function handleDialogInput(event) {
+  if (event.target && event.target.id === "settings-full-name") {
+    const previewImg = document.getElementById("settings-avatar-preview");
+    const activeUrl = previewImg && !previewImg.hidden ? previewImg.getAttribute("src") : "";
+    updateSettingsPreview(activeUrl, event.target.value);
+  }
 }
 
 function handleSubmit(event) {
@@ -1138,6 +1728,9 @@ function handleSubmit(event) {
   } else if (form.id === "edit-found-form") {
     event.preventDefault();
     handleEditSubmit(form);
+  } else if (form.id === "account-settings-form") {
+    event.preventDefault();
+    handleSettingsSubmit(form);
   }
 }
 
@@ -1174,10 +1767,11 @@ function statusBadge(status) {
   return `<span class="status-badge status-${safeStatus}">${escapeHtml(STATUS_LABELS[safeStatus])}</span>`;
 }
 
-function renderImage(url, alt, className) {
+function renderImage(url, alt, className, disableDrag = false) {
   if (!url || !isSafeImageUrl(url)) return "";
   const classAttribute = className ? ` class="${escapeAttribute(className)}"` : "";
-  return `<img${classAttribute} src="${escapeAttribute(url)}" alt="${escapeAttribute(alt)}" loading="lazy">`;
+  const dragAttribute = disableDrag ? ' draggable="false"' : "";
+  return `<img${classAttribute} src="${escapeAttribute(url)}" alt="${escapeAttribute(alt)}" loading="lazy"${dragAttribute}>`;
 }
 
 function isSafeImageUrl(value) {
@@ -1192,8 +1786,14 @@ function isSafeImageUrl(value) {
 function renderEmptyState(title, description) {
   return `<div class="empty-state"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(description)}</p></div>`;
 }
-function loadingMarkup(text) { return `<div class="loading-state" role="status">${escapeHtml(text)}</div>`; }
-function errorMarkup(title, description) { return renderEmptyState(title, description); }
+
+function loadingMarkup(text) {
+  return `<div class="loading-state" role="status">${escapeHtml(text)}</div>`;
+}
+
+function errorMarkup(title, description) {
+  return renderEmptyState(title, description);
+}
 
 function formatDate(value) {
   if (!value) return "Tanggal belum dicatat";
@@ -1219,7 +1819,10 @@ function escapeHtml(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[character]);
 }
-function escapeAttribute(value) { return escapeHtml(value); }
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
 
 function friendlyError(error) {
   console.error(error);
@@ -1238,10 +1841,14 @@ function setCookieNoticeOpen(isOpen) {
   elements.cookieNoticeButton.setAttribute("aria-expanded", String(isOpen));
 }
 
+elements.accountAvatarImg.addEventListener("error", () => {
+  elements.accountAvatarImg.hidden = true;
+  elements.accountAvatarFallback.hidden = false;
+});
+elements.accountSettingsButton.addEventListener("click", openSettingsModal);
 elements.googleLogin.addEventListener("click", handleGoogleLogin);
 elements.cookieNoticeButton.addEventListener("click", () => setCookieNoticeOpen(elements.cookieNoticePanel.hidden));
 elements.cookieNoticeClose.addEventListener("click", () => setCookieNoticeOpen(false));
-elements.logoutButton.addEventListener("click", handleLogout);
 elements.nav.addEventListener("click", handleMainClick);
 document.querySelector(".app-header").addEventListener("click", handleMainClick);
 elements.appContent.addEventListener("click", handleMainClick);
@@ -1249,6 +1856,8 @@ elements.appContent.addEventListener("submit", handleSubmit);
 elements.appContent.addEventListener("input", handleMainInput);
 elements.appContent.addEventListener("change", handleMainChange);
 elements.dialogRoot.addEventListener("click", handleDialogClick);
+elements.dialogRoot.addEventListener("change", handleDialogChange);
+elements.dialogRoot.addEventListener("input", handleDialogInput);
 elements.dialogRoot.addEventListener("submit", handleSubmit);
 elements.mobileMenu.addEventListener("click", toggleMobileMenu);
 document.addEventListener("keydown", (event) => {
