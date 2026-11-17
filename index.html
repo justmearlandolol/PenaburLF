@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#213b6b">
-  <meta name="description" content="Portal internal Lost & Found BPK PENABUR untuk melaporkan dan mencari barang hilang.">
+  <meta name="description" content="Portal Lost & Found BPK PENABUR untuk melaporkan dan mencari barang hilang.">
   <title>Lost &amp; Found — BPK PENABUR</title>
   <link rel="icon" type="image/png" href="Logo.jpeg">
   <link rel="stylesheet" href="style.css">
@@ -23,7 +23,7 @@
 
       <div id="login-methods">
         <div id="login-message" class="form-message" role="alert" aria-live="polite" hidden></div>
-        <h2 class="oauth-heading" data-i18n="oauth">Masuk dengan akun Google sekolah:</h2>
+        <h2 class="oauth-heading" data-i18n="oauth">Masuk dengan akun Google:</h2>
         <button id="google-login" class="google-login" type="button">
           <svg class="google-mark" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#4285F4" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12S17.4 12 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.3-.4-3.5z"/>
@@ -33,7 +33,7 @@
           </svg>
           <span>Google</span>
         </button>
-        <p class="login-hint" data-i18n="loginHint">Gunakan akun Google BPK PENABUR untuk masuk.</p>
+        <p class="login-hint" data-i18n="loginHint">Gunakan akun Google BPK PENABUR atau Gmail untuk masuk.</p>
 
         <div id="setup-notice" class="setup-notice" role="status" data-i18n="setup" hidden>
           <strong>Konfigurasi diperlukan</strong>
@@ -43,7 +43,7 @@
 
       <div id="cookie-notice-panel" class="cookie-notice-panel" role="dialog" aria-labelledby="cookie-notice-title" hidden>
         <h2 id="cookie-notice-title" data-i18n="cookieTitle">Pemberitahuan sesi</h2>
-        <p data-i18n="cookieText">Portal menggunakan penyimpanan browser Supabase untuk menjaga sesi login. Masuk hanya bisa lewat akun Google sekolah.</p>
+        <p data-i18n="cookieText">Portal menggunakan penyimpanan browser Supabase untuk menjaga sesi login dengan akun Google BPK PENABUR atau Gmail.</p>
         <button id="cookie-notice-close" class="button button-secondary button-small" type="button" data-i18n="close">Tutup</button>
       </div>
       <footer class="login-footer">
@@ -78,11 +78,16 @@
             </button>
             <span id="account-badge" class="role-badge" hidden></span>
             <a id="panel-link" class="panel-link" href="Admin.html" hidden>Panel admin <span aria-hidden="true">&#8594;</span></a>
-            <div class="account-copy">
-              <span id="account-name" class="account-name"></span>
-              <span id="account-email" class="account-email"></span>
-            </div>
-            <button id="logout-button" class="button button-quiet button-logout" type="button">Keluar</button>
+            <button id="account-settings-button" class="account-trigger" type="button" aria-label="Buka pengaturan akun" title="Pengaturan akun">
+              <span class="account-copy">
+                <span id="account-name" class="account-name"></span>
+                <span id="account-email" class="account-email"></span>
+              </span>
+              <span class="account-avatar">
+                <img id="account-avatar-img" class="account-avatar-img" alt="" referrerpolicy="no-referrer" hidden>
+                <span id="account-avatar-fallback" class="account-avatar-fallback" aria-hidden="true"></span>
+              </span>
+            </button>
           </div>
         </div>
 
@@ -103,11 +108,11 @@
 
     <footer class="app-footer">
       <div class="footer-inner">
-        <span>Lost &amp; Found <span aria-hidden="true">·</span>  SMAK 7 PENABUR JAKARTA</span>
-       
+        <span>Lost &amp; Found <span aria-hidden="true">·</span> SMAK 7 PENABUR JAKARTA</span>
       </div>
     </footer>
   </div>
 
   <div id="dialog-root"></div>
+</body>
 </html>
